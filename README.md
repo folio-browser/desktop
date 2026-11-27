@@ -35,7 +35,11 @@ They point at the author's own folders; change the paths at the top of each scri
 ## License
 
 Folio's code is under the [Mozilla Public License 2.0](LICENSE), the same license as Firefox.
-Folio ships uBlock Origin, which is under the GPLv3: its package is in
-`source/browser/app/distribution/extensions/`, and its source is at https://github.com/gorhill/uBlock.
+Folio's built-in ad blocker uses uBlock Origin's filter lists and runs uBlock Origin's scriptlets (converted in
+`source/browser/components/folio-settings/blocker/`). uBlock Origin is under the GPLv3; its source is at
+https://github.com/gorhill/uBlock. Folio also ships Proton VPN's extension (GPLv3, switched off until you enable it).
+
+The typing sounds are recordings from [Mechvibes](https://github.com/hainguyents13/mechvibes) (MIT License; the license
+text ships next to them in `source/browser/components/folio-settings/sounds/`).
 
 Folio is not made by or affiliated with Mozilla. Firefox is a trademark of the Mozilla Foundation.
