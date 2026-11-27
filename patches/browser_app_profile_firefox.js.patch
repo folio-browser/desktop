@@ -1,0 +1,255 @@
+--- a/browser/app/profile/firefox.js
++++ b/browser/app/profile/firefox.js
+@@ -338,8 +338,8 @@
+ // 0 = blank, 1 = home (browser.startup.homepage), 2 = last visited page, 3 = resume previous browser session
+ // The behavior of option 3 is detailed at: http://wiki.mozilla.org/Session_Restore
+ pref("browser.startup.page",                1);
+-pref("browser.startup.homepage",            "about:home");
+-pref("browser.startup.homepage.abouthome_cache.enabled", true);
++pref("browser.startup.homepage",            "about:folio-newtab");
++pref("browser.startup.homepage.abouthome_cache.enabled", false);
+ pref("browser.startup.homepage.abouthome_cache.loglevel", "Warn");
+ 
+ // Whether we should skip the homepage when opening the first-run page
+@@ -3941,3 +3941,241 @@
+ #ifdef XP_MACOSX
+   pref("browser.macAppMenu.setAsDefaultShown", false);
+ #endif
++
++// --- custom build overrides ---
++pref("toolkit.telemetry.enabled", false);
++pref("toolkit.telemetry.unified", false);
++pref("datareporting.healthreport.uploadEnabled", false);
++pref("app.shield.optoutstudies.enabled", false);
++pref("toolkit.telemetry.archive.enabled", false);
++pref("browser.newtabpage.activity-stream.showSponsored", false);
++pref("browser.newtabpage.activity-stream.showSponsoredTopSites", false);
++pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
++pref("browser.urlbar.suggest.quicksuggest.sponsored", false);
++pref("browser.discovery.enabled", false);                       // VERIFY: promos / recommendations
++pref("extensions.htmlaboutaddons.recommendations.enabled", false);
++pref("extensions.pocket.enabled", false);                      // VERIFY: Pocket
++pref("browser.tabs.firefox-view", false);                       // Firefox View tab (Recently closed stays)
++pref("reader.parse-on-load.enabled", false);                    // Reader mode
++pref("browser.translations.enable", false);                     // Built-in translation (use DeepL extension)
++pref("browser.shopping.experience2023.enabled", false);         // VERIFY: Shopping
++pref("browser.contentblocking.report.lockwise.enabled", false); // VERIFY: password manager promos
++pref("browser.vpn_promo.enabled", false);                       // VERIFY: VPN promo
++pref("browser.relay.enabled", false);                           // VERIFY: Relay promo
++
++// First run opens the Folio welcome tour (built-in page with browser privileges).
++pref("startup.homepage_welcome_url", "chrome://browser/content/folio-welcome/index.html");
++pref("browser.aboutwelcome.enabled", false);
++
++// No "Firefox Privacy Notice" tab on first run.
++pref("datareporting.policy.firstRunURL", "");
++
++// ---- Folio: nothing goes to Mozilla (Sync, add-on installs and security blocklists kept for now) ----
++pref("datareporting.policy.dataSubmissionEnabled", false);   // the "sends data to Mozilla" bar
++pref("datareporting.usage.uploadEnabled", false);
++pref("toolkit.telemetry.server", "data:,");
++pref("toolkit.telemetry.newProfilePing.enabled", false);
++pref("toolkit.telemetry.shutdownPingSender.enabled", false);
++pref("toolkit.telemetry.updatePing.enabled", false);
++pref("toolkit.telemetry.bhrPing.enabled", false);
++pref("toolkit.telemetry.firstShutdownPing.enabled", false);
++pref("toolkit.coverage.opt-out", true);
++pref("toolkit.coverage.endpoint.base", "");
++pref("app.normandy.enabled", false);                          // remote experiments
++pref("app.normandy.api_url", "");
++pref("messaging-system.rsexperimentloader.enabled", false);
++pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
++pref("browser.newtabpage.activity-stream.telemetry", false);
++pref("browser.newtabpage.activity-stream.feeds.discoverystreamfeed", false);
++pref("browser.topsites.contile.enabled", false);               // sponsored tiles service
++pref("browser.urlbar.quicksuggest.enabled", false);            // suggestions server
++pref("browser.urlbar.suggest.quicksuggest.nonsponsored", false);
++pref("browser.ping-centre.telemetry", false);
++pref("browser.uitour.enabled", false);
++pref("network.captive-portal-service.enabled", false);         // detectportal.firefox.com
++pref("network.connectivity-service.enabled", false);
++pref("dom.push.connection.enabled", false);                    // push.services.mozilla.com
++pref("browser.ml.enable", false);                              // AI model downloads
++pref("browser.ml.chat.enabled", false);
++pref("extensions.getAddons.showPane", false);                  // add-on recommendations pane
++pref("extensions.htmlaboutaddons.recommendations.enabled", false);
++pref("browser.region.network.url", "");                        // region lookup
++pref("browser.region.update.enabled", false);
++pref("geo.provider.network.url", "");
++pref("media.gmp-gmpopenh264.enabled", false);                  // codec downloads
++pref("media.gmp-manager.url", "data:text/plain,");
++pref("media.gmp-manager.updateEnabled", false);         // the url above alone still let a fresh profile download OpenH264 (Cisco) + Widevine (Google), audit 2026-11-26
++pref("media.eme.enabled", false);                              // DRM: no streaming, as asked
++pref("media.gmp-widevinecdm.enabled", false);
++pref("network.prefetch-next", false);
++pref("network.dns.disablePrefetch", true);
++pref("browser.places.speculativeConnect.enabled", false);
++pref("browser.urlbar.speculativeConnect.enabled", false);
++
++// ---- Folio: Arc-style window ----
++pref("sidebar.revamp", true);
++pref("sidebar.verticalTabs", true);
++pref("sidebar.visibility", "always-show");
++pref("browser.toolbars.bookmarks.visibility", "never");
++pref("browser.tabs.inTitlebar", 1);
++pref("browser.newtabpage.activity-stream.default.sites", "");  // no Wikipedia/Reddit/Add-ons presets
++
++// ---- Folio: the new tab starts minimal: logo + search only. Everything else is off until turned on. ----
++pref("browser.newtabpage.activity-stream.showSearch", true);
++pref("browser.newtabpage.activity-stream.logowordmark.alwaysVisible", true);
++pref("browser.newtabpage.activity-stream.feeds.topsites", false);
++pref("browser.newtabpage.activity-stream.feeds.section.highlights", false);
++pref("browser.newtabpage.activity-stream.showWeather", false);
++pref("browser.newtabpage.activity-stream.widgets.enabled", false);
++pref("browser.newtabpage.activity-stream.widgets.system.enabled", false);
++pref("browser.newtabpage.activity-stream.widgets.lists.enabled", false);
++pref("browser.newtabpage.activity-stream.widgets.focusTimer.enabled", false);
++pref("folio.sidebar.hidden", false);
++pref("folio.hide.sidebartools", true);
++pref("browser.download.useDownloadDir", false);  // ask where to save files by default
++pref("browser.newtab.url", "about:folio-newtab");  // Folio's own new tab page
++pref("folio.hide.alltabs", true);  // "Search and manage tabs" button: hidden, not deleted (Settings > Toolbar > Tab list)
++pref("folio.toolbar.sidebar", true);
++pref("folio.sidebar.width", 260);
++
++// Folio: address bar / new tab search suggestions come from the engine the user picked; allow a slow connection (default 500 ms drops them).
++pref("browser.search.suggest.timeout", 3000);
++
++// Folio: See-through window (Zen-style). Off by default; Settings > Look and Feel turns it on.
++pref("folio.seethrough", false);
++pref("folio.seethrough.sidebar", 30);  // window tint opacity, percent
++pref("folio.seethrough.page", 62);     // page card total opacity, percent (never below the sidebar's)
++pref("folio.seethrough.accent", true); // tint with the space color
++pref("folio.seethrough.material", "acrylic");  // Windows only: acrylic (true blur) or mica
++
++// Folio memory (measured with debugtools/mem_profile.py and mem_browse.py on the same pages):
++//   one spare content process instead of three: -21 MB at idle
++//   Back/Forward cache of 3 pages instead of "auto" (8 on 16 GB) + 64 MB memory cache: after browsing 10 heavy pages in 3 tabs,
++//   890 MB -> about 770 MB (2 pages measured 744, 4 pages 792). Settings > Performance has a slider for it.
++pref("dom.ipc.processPrelaunch.fission.number", 1);
++pref("browser.sessionhistory.max_total_viewers", 3);
++pref("browser.cache.memory.capacity", 65536);          // KB
++pref("browser.sessionstore.max_tabs_undo", 10);         // closed tabs kept for "reopen": was 25
++pref("browser.sessionstore.max_windows_undo", 1);       // was 5
++pref("browser.sessionstore.interval", 30000);           // save the session every 30 s, not 15 (less disk and CPU)
++pref("image.mem.surfacecache.max_size_kb", 524288);     // cap decoded-image cache at 512 MB
++
++// ---- Folio: privacy and security hardening (2026-11-21, from a measured network audit, debugtools/net_audit.py) ----
++// Found by the audit: an EMPTY search request to the search engine at startup (trending suggestions) and the engine's
++// icon fetched from its CDN. Both gone below / in policies.json.
++pref("browser.urlbar.suggest.trending", false);
++pref("browser.urlbar.trending.featureGate", false);
++pref("browser.urlbar.suggest.weather", false);
++pref("browser.newtabpage.activity-stream.showSponsored", false);
++pref("browser.newtabpage.activity-stream.showSponsoredTopSites", false);
++pref("browser.newtabpage.activity-stream.discoverystream.enabled", false);
++pref("browser.safebrowsing.downloads.remote.enabled", false);      // would send download hashes to Google
++pref("toolkit.telemetry.enabled", false);
++pref("dom.private-attribution.submission.enabled", false);
++pref("dom.push.enabled", false);                                    // no Mozilla push server at all
++// Web: safer by default.
++pref("dom.security.https_only_mode", true);                         // http:// sites ask first (localhost is exempt)
++pref("network.http.referer.XOriginTrimmingPolicy", 2);              // other sites only see your origin, not the page
++pref("privacy.query_stripping.enabled", true);                      // removes utm_/fbclid-style tracking from links
++pref("privacy.query_stripping.enabled.pbmode", true);
++pref("privacy.globalprivacycontrol.enabled", true);
++pref("privacy.trackingprotection.enabled", true);                   // in every window, not only private ones
++pref("privacy.trackingprotection.socialtracking.enabled", true);
++pref("security.tls.enable_0rtt_data", false);                       // TLS early data can be replayed
++pref("media.peerconnection.ice.default_address_only", true);        // WebRTC: do not list every local network address
++pref("geo.provider.use_geoclue", false);                            // no system location service lookups
++pref("network.http.speculative-parallel-limit", 0);                 // no connections to sites you have not opened
++pref("network.predictor.enabled", false);
++// Found by the audit once Marionette's own overrides were switched off (remote.prefs.recommended=false): this build has NO Google
++// API key, so Safe Browsing never worked; it only pinged Google (key=no-google-safebrowsing-api-key) every ~30 minutes.
++pref("browser.safebrowsing.malware.enabled", false);
++pref("browser.safebrowsing.phishing.enabled", false);
++pref("browser.safebrowsing.downloads.enabled", false);
++pref("browser.safebrowsing.blockedURIs.enabled", false);
++pref("browser.search.update", false);                               // engines come from policies.json, not from Mozilla
++pref("extensions.systemAddon.update.enabled", false);               // Folio has no system add-ons to update
++pref("extensions.getAddons.cache.enabled", false);                  // would send your add-on ids to Mozilla for details
++pref("browser.urlbar.merino.endpointURL", "");
++// "Security updates" (Settings > Privacy and security): certificate revocation, add-on blocklist, tracker lists, from Mozilla.
++// Folio downloads the lists and sends nothing about you but your IP address. Read by services/settings/Utils.sys.mjs and RemoteSettingsClient.
++pref("folio.safety.updates", true);
++
++// Folio: hibernation (tabs nobody looks at are put to sleep) and the memory card on tab hover.
++pref("folio.hibernate.enabled", true);
++pref("folio.hibernate.minutes", 30);
++// Tabs of a space you left sleep after this many minutes (0 = never); entering a space again before that reloads nothing.
++pref("folio.hibernate.spaces.minutes", 10);
++// Separate logins per space use Firefox's containers; their own menus stay hidden (Folio has its own UI for it).
++pref("privacy.userContext.enabled", true);
++pref("privacy.userContext.ui.enabled", false);
++pref("folio.tabtip.enabled", true);
++
++// Folio: performance limits (Settings > Performance). 0 = off.
++pref("folio.limit.memoryMB", 0);
++pref("folio.limit.cpuPercent", 0);
++pref("folio.limit.lowPriority", false);
++
++// Folio: fingerprint protection (Brave-style "farbling" where Firefox has it). Standard mode keeps its name because
++// the Standard category expects the DEFAULT value of this pref, so the default itself is turned on.
++pref("privacy.fingerprintingProtection", true);
++pref("privacy.fingerprintingProtection.pbmode", true);
++
++// Folio: always bring the last session back. Open the previous windows and tabs on every start, and after a
++// crash restore them automatically instead of showing the "Sorry. We're having trouble" page (-1 = never show it).
++pref("browser.startup.page", 3);
++pref("browser.sessionstore.max_resumed_crashes", -1);
++
++// ---- Folio: declutter (night shift 2026-11-24). Menus show only what a person uses; nothing that phones a third party by itself. ----
++pref("browser.ml.chat.menu", false);                 // "Ask an AI Chatbot" in the right-click menu
++pref("browser.ml.chat.page", false);
++pref("browser.ml.chat.shortcuts", false);            // chatbot bubble on text selection
++pref("browser.mini-window.enabled", false);          // "Move Section to Mini Window" (beta)
++pref("ui.new-webcompat-reporter.enabled", false);    // "Report Broken Site" sends reports to Mozilla
++pref("browser.tabs.tabmanager.enabled", false);      // the "List all tabs" arrow: Folio has its own tab list
++pref("identity.fxaccounts.toolbar.appMenuSignInPromo.dismissed", true); // app menu: plain "Sign in" row instead of the fox "Sync your data everywhere" ad
++pref("signon.firefoxRelay.feature", "");                  // Firefox Relay email masks (a Mozilla service): "" = not offered, not shown
++
++// ---- Folio: scrolling (2026-11-24, Sammy: "Zen's smooth scrolling felt really damn smooth") ----
++// Zen's exact values, read from Zen 1.24's own defaults (zen.js in its omni.ja): spring-physics smooth scrolling.
++pref("general.smoothScroll", true);
++pref("general.smoothScroll.msdPhysics.enabled", true);
++pref("general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS", 12);
++pref("general.smoothScroll.msdPhysics.motionBeginSpringConstant", 600);
++pref("general.smoothScroll.msdPhysics.regularSpringConstant", 650);
++pref("general.smoothScroll.msdPhysics.slowdownMinDeltaMS", 25);
++pref("general.smoothScroll.msdPhysics.slowdownSpringConstant", 250);
++pref("general.smoothScroll.currentVelocityWeighting", "0.15");
++pref("general.smoothScroll.stopDecelerationWeighting", "0.6");
++pref("general.smoothScroll.mouseWheel.durationMinMS", 80);
++pref("mousewheel.default.delta_multiplier_y", 200);
++pref("mousewheel.min_line_scroll_amount", 10);
++// Middle-click autoscroll (hold the wheel on a page and move to scroll). Firefox turns it off on Linux only.
++// Middle-click paste into text fields and middle-click on links (new tab) still work.
++pref("general.autoScroll", true);
++pref("folio.sidebar.icons", false);  // icons-only sidebar (drag its edge narrow, or Settings > Look and Feel > Sidebar)
++
++// ---- Folio: memory (2026-11-24, measured: 8 tabs on 4 sites, night/memload.sh) ----
++// Tabs of the SAME site share one process (Firefox allows up to 4 per site). Sites stay isolated from each other
++// (Fission untouched). Measured: 938 -> 864 MB, 15 -> 11 processes with 2 tabs per site; more tabs per site save more.
++pref("dom.ipc.processCount.webIsolated", 1);
++pref("folio.trim.idleSeconds", 90);  // idle trim: give memory back after this long without input (0 = off)
++// No spare content process waiting in the background (measured -21 MB idle). Folio's fork server starts a new one in milliseconds.
++pref("dom.ipc.processPrelaunch.enabled", false);
++pref("dom.ipc.processPrelaunch.fission.number", 0);
++
++// Folio's built-in ad blocker (FolioBlocker.sys.mjs, 2026-11-24): uBlock's default lists fed to Firefox's own
++// native filter engine (content classifier). Off until it also hides ad boxes and handles YouTube (uBlock covers those).
++pref("folio.blocker.enabled", false);
++pref("folio.blocker.updateDays", 4);
++
++// Sidebar on the right side of the window (Zen layout). 2026-11-25
++pref("folio.sidebar.right", false);
++// New tab clock: "auto", "12" or "24" (Settings > Appearance). 2026-11-25
++pref("folio.newtab.clock", "auto");
++pref("folio.sidebar.wheelTabs", false);
++pref("folio.split.layout", "columns");
++pref("folio.routes.external", "");
++pref("folio.bangs.custom", "[]");
++// Shift + scroll switches spaces (folio-zen.js), so it no longer scrolls pages sideways.
++pref("mousewheel.with_shift.action", 0);
++

@@ -1,0 +1,13 @@
+--- a/gfx/thebes/gfxFcPlatformFontList.cpp
++++ b/gfx/thebes/gfxFcPlatformFontList.cpp
+@@ -2549,6 +2549,10 @@
+                  : FontVisibility::User;
+   cacheKey.Append(':');
+   cacheKey.AppendInt(int(vis));
++  if (aFontVisibilityProvider) {  // Folio: per-site font farbling must not be shared between sites
++    cacheKey.Append(':');
++    cacheKey.AppendInt(int64_t(aFontVisibilityProvider->GetFontFarbleSeed() >> 1));
++  }
+   if (const auto& cached = mFcSubstituteCache.Lookup(cacheKey)) {
+     if (cached->IsEmpty()) {
+       return false;

@@ -1,0 +1,28 @@
+--- a/browser/components/preferences/preferences.js
++++ b/browser/components/preferences/preferences.js
+@@ -1199,8 +1199,24 @@
+   element.setAttribute("searchkeywords", keywords.join(" "));
+ }
+ 
++// Folio ships its own defaults as policies (distribution/policies.json: Brave Search, no studies, no Mozilla
++// messaging). Those are not an organization managing the browser, so the "managed" banner only shows when a
++// policy outside that set is active.
++const FOLIO_OWN_POLICIES = new Set([
++  "SearchEngines",
++  "DisableFirefoxStudies",
++  "DisableRemoteImprovements",
++  "UserMessaging",
++  "NoDefaultBookmarks",
++  "SitePolicies", // Firefox 160 turns this on by itself (empty); not a real organization policy
++]);
++
+ function maybeDisplayPoliciesNotice() {
+-  if (Services.policies.status == Services.policies.ACTIVE) {
++  let foreign = Object.keys(Services.policies.getActivePolicies() || {}).some(
++    name => !FOLIO_OWN_POLICIES.has(name)
++  );
++  if (Services.policies.status == Services.policies.ACTIVE && foreign) {
++
+     document
+       .getElementById("policies-container-content")
+       .removeAttribute("hidden");

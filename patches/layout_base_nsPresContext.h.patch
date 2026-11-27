@@ -1,0 +1,12 @@
+--- a/layout/base/nsPresContext.h
++++ b/layout/base/nsPresContext.h
+@@ -144,6 +144,9 @@
+   NS_DECL_CYCLE_COLLECTION_CLASS(nsPresContext)
+ 
+   FONT_VISIBILITY_PROVIDER_IMPL
++  uint64_t GetFontFarbleSeed() const override;
++  // Folio: the seed is asked for on every font family lookup; the document's site never changes, so compute it once.
++  mutable mozilla::Maybe<uint64_t> mFontFarbleSeed;
+ 
+   enum nsPresContextType : uint8_t {
+     eContext_Galley,        // unpaginated screen presentation

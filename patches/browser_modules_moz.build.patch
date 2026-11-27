@@ -1,0 +1,19 @@
+--- a/browser/modules/moz.build
++++ b/browser/modules/moz.build
+@@ -129,6 +129,16 @@
+     "FaviconLoader.sys.mjs",
+     "FilterAdult.sys.mjs",
+     "FirefoxBridgeExtensionUtils.sys.mjs",
++    "FolioBangs.sys.mjs",
++    "FolioBangsData.sys.mjs",
++    "FolioBlocker.sys.mjs",
++    "FolioCosmeticChild.sys.mjs",
++    "FolioCosmeticParent.sys.mjs",
++    "FolioSeeThroughChild.sys.mjs",
++    "FolioSeeThroughParent.sys.mjs",
++    "FolioSkins.sys.mjs",
++    "FolioZenChild.sys.mjs",
++    "FolioZenParent.sys.mjs",
+     "HomePage.sys.mjs",
+     "LaterRun.sys.mjs",
+     "LinksCache.sys.mjs",

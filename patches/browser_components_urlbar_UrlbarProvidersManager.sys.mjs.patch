@@ -1,0 +1,14 @@
+--- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
++++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
+@@ -95,6 +95,11 @@
+     supportedSAPs: ["urlbar"],
+   },
+   {
++    name: "FolioBangsProvider",
++    module: "resource:///modules/FolioBangs.sys.mjs",
++    supportedSAPs: ["urlbar"],
++  },
++  {
+     name: "UrlbarProviderHeuristicFallback",
+     module:
+       "moz-src:///browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs",

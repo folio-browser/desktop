@@ -1,0 +1,25 @@
+--- a/toolkit/components/content-classifier/nsIContentClassifierService.idl
++++ b/toolkit/components/content-classifier/nsIContentClassifierService.idl
+@@ -108,6 +108,22 @@
+     [implicit_jscontext] Promise probeFeature(
+         in ACString aFeatureName,
+         in nsIContentClassifierProbeRequest aRequest);
++
++    /**
++     * Folio's built-in ad blocker: cosmetic resources for a page URL from the
++     * "test_block" engine (Folio's filter lists). Lists are newline-joined.
++     * Throws NS_ERROR_NOT_AVAILABLE when that engine isn't built.
++     */
++    void folioCosmetic(in ACString aUrl, out ACString aHide,
++                       out ACString aExceptions, out ACString aScript,
++                       out boolean aGenerichide);
++
++    /**
++     * Folio: generic hide selectors for the classes/ids seen on a page
++     * (newline-joined), minus aExceptions from folioCosmetic.
++     */
++    ACString folioClassIdSelectors(in ACString aClasses, in ACString aIds,
++                                   in ACString aExceptions);
+ };
+ 
+ /**

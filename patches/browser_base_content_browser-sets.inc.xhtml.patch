@@ -1,0 +1,43 @@
+--- a/browser/base/content/browser-sets.inc.xhtml
++++ b/browser/base/content/browser-sets.inc.xhtml
+@@ -189,6 +189,28 @@
+     <key id="key_openAddons" data-l10n-id="addons-shortcut-2" command="Tools:Addons" modifiers="accel,shift"/>
+     <key id="openFileKb" data-l10n-id="file-open-shortcut" command="Browser:OpenFile"  modifiers="accel"/>
+     <key id="key_savePage" data-l10n-id="save-page-shortcut" command="Browser:SavePage" modifiers="accel"/>
++    <!-- Folio: Ctrl+Alt+S shows or hides our sidebar (Zen uses the same key) (same key as Zen). -->
++    <key id="key_folioToggleSidebar" key="s" modifiers="accel,alt" command="Folio:ToggleSidebar" reserved="true"/>
++    <!-- Folio spaces, like Zen: Alt+1..0 go to space 1..10, Ctrl+Alt+Right / Left = next / previous space -->
++    <key id="key_folioSpaceNext" keycode="VK_RIGHT" modifiers="accel,alt" command="Folio:SpaceNext" reserved="true"/>
++    <key id="key_folioSpacePrev" keycode="VK_LEFT" modifiers="accel,alt" command="Folio:SpacePrev" reserved="true"/>
++    <key id="key_folioSpace1" key="1" modifiers="alt" command="Folio:Space1" reserved="true"/>
++    <key id="key_folioSpace2" key="2" modifiers="alt" command="Folio:Space2" reserved="true"/>
++    <key id="key_folioSpace3" key="3" modifiers="alt" command="Folio:Space3" reserved="true"/>
++    <key id="key_folioSpace4" key="4" modifiers="alt" command="Folio:Space4" reserved="true"/>
++    <key id="key_folioSpace5" key="5" modifiers="alt" command="Folio:Space5" reserved="true"/>
++    <key id="key_folioSpace6" key="6" modifiers="alt" command="Folio:Space6" reserved="true"/>
++    <key id="key_folioSpace7" key="7" modifiers="alt" command="Folio:Space7" reserved="true"/>
++    <key id="key_folioSpace8" key="8" modifiers="alt" command="Folio:Space8" reserved="true"/>
++    <key id="key_folioSpace9" key="9" modifiers="alt" command="Folio:Space9" reserved="true"/>
++    <key id="key_folioSpace10" key="0" modifiers="alt" command="Folio:Space10" reserved="true"/>
++    <key id="key_folioNewSpace" command="Folio:NewSpace" reserved="true"/>
++    <!-- Folio, from Zen: copy the page link (Ctrl+Shift+C), as Markdown (Ctrl+Alt+Shift+C), close all unpinned tabs, pin a tab, history -->
++    <key id="key_folioCopyURL" key="C" modifiers="accel,shift" command="Folio:CopyURL" reserved="true"/>
++    <key id="key_folioCopyURLMarkdown" key="C" modifiers="accel,alt,shift" command="Folio:CopyURLMarkdown" reserved="true"/>
++    <key id="key_folioCloseUnpinned" key="K" modifiers="accel,shift" command="Folio:CloseUnpinned" reserved="true"/>
++    <key id="key_folioTogglePin" key="D" modifiers="accel,shift" command="Folio:TogglePin" reserved="true"/>
++    <key id="key_folioHistory" key="L" modifiers="alt,shift" command="Folio:ToggleHistory" reserved="true"/>
+     <key id="printKb" data-l10n-id="print-shortcut" command="cmd_print"  modifiers="accel"/>
+     <key id="key_close" data-l10n-id="close-shortcut" command="cmd_close" modifiers="accel" reserved="true"/>
+     <key id="key_closeWindow" data-l10n-id="close-shortcut" command="cmd_closeWindow" modifiers="accel,shift" reserved="true"/>
+@@ -382,11 +404,7 @@
+     <key id="key_duplicateTab" command="Browser:DuplicateTab"/>
+     <key id="key_copyTabURL" command="Browser:CopyTabURL"/>
+ 
+-#ifdef XP_GNOME
+-#define NUM_SELECT_TAB_MODIFIER alt
+-#else
+ #define NUM_SELECT_TAB_MODIFIER accel
+-#endif
+ 
+ #expand    <key id="key_selectTab1" key="1" modifiers="__NUM_SELECT_TAB_MODIFIER__"/>
+ #expand    <key id="key_selectTab2" key="2" modifiers="__NUM_SELECT_TAB_MODIFIER__"/>

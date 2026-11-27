@@ -1,0 +1,49 @@
+--- a/toolkit/components/resistfingerprinting/FontVisibilityProvider.cpp
++++ b/toolkit/components/resistfingerprinting/FontVisibilityProvider.cpp
+@@ -112,3 +112,46 @@
+ 
+   return FontVisibility(level);
+ }
++
++// Folio: font farbling seed = random per-session secret mixed with the site (same idea as Brave's session token + eTLD+1).
++#include "mozilla/RandomNum.h"
++#include "mozilla/HashFunctions.h"
++#include "prtime.h"
++#include "prenv.h"
++#include <stdlib.h>
++
++uint64_t FontVisibilityProvider::FarbleSeedForSite(const nsACString& aSite) {
++  static const uint64_t sSessionSecret = [] {
++    // The main process creates it at startup (nsAppRunner.cpp) and every child process inherits it.
++    if (const char* env = PR_GetEnv("FOLIO_FARBLE_SECRET")) {
++      return uint64_t(strtoull(env, nullptr, 16));
++    }
++    mozilla::Maybe<uint64_t> r = mozilla::RandomUint64();
++    return r.valueOr(uint64_t(PR_Now()) * 0x9E3779B97F4A7C15ULL);
++  }();
++  uint64_t h = sSessionSecret ^ (uint64_t(mozilla::HashString(aSite)) * 0x9E3779B97F4A7C15ULL);
++  h ^= h >> 33; h *= 0xff51afd7ed558ccdULL; h ^= h >> 33;
++  return h | 1;  // never 0
++}
++
++#include "mozilla/dom/Document.h"
++#include "nsRFPService.h"
++#include "nsIPrincipal.h"
++
++uint64_t FontVisibilityProvider::FarbleMix(uint64_t aSeed, uint64_t aSalt) {
++  uint64_t h = aSeed ^ (aSalt * 0x9E3779B97F4A7C15ULL);
++  h ^= h >> 33; h *= 0xff51afd7ed558ccdULL; h ^= h >> 33; h *= 0xc4ceb9fe1a85ec53ULL; h ^= h >> 33;
++  return h;
++}
++
++uint64_t FontVisibilityProvider::FarbleSeedForDocument(mozilla::dom::Document* aDoc, mozilla::RFPTarget aTarget) {
++  if (!aDoc || !aDoc->ShouldResistFingerprinting(aTarget)) {
++    return 0;
++  }
++  nsAutoCString site;
++  nsIPrincipal* principal = aDoc->NodePrincipal();
++  if (!principal || NS_FAILED(principal->GetBaseDomain(site)) || site.IsEmpty()) {
++    site.AssignLiteral("(opaque)");
++  }
++  return FarbleSeedForSite(site);
++}

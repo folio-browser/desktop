@@ -1,0 +1,16 @@
+--- a/toolkit/themes/shared/aboutNetError.css
++++ b/toolkit/themes/shared/aboutNetError.css
+@@ -353,3 +353,13 @@
+     background-position-x: right;
+   }
+ }
++
++/* Folio (2026-11-26): the illustration is as big as the new tab's F (150 px), centered beside the text. */
++.felt-privacy-container { align-items: center; }
++.img-container > img, .img-container > img.no-connection {
++  width: 230px !important; height: auto; margin-block-start: 0 !important; margin-inline-end: 24px !important;
++  filter: drop-shadow(0 8px 28px rgba(0, 0, 0, 0.3));
++}
++@media (max-width: 640px) { .img-container > img, .img-container > img.no-connection { margin-inline-end: 0 !important; margin-block-end: 20px !important; } }
++/* Centered in the page like the new tab's logo and clock. */
++body.felt-privacy-body { justify-content: center !important; padding-block: 0 !important; }

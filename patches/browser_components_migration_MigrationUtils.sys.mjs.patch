@@ -1,0 +1,15 @@
+--- a/browser/components/migration/MigrationUtils.sys.mjs
++++ b/browser/components/migration/MigrationUtils.sys.mjs
+@@ -128,6 +128,12 @@
+       "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs",
+     platforms: ["linux", "macosx", "win"],
+   },
++  // Folio: Helium (Linux path only so far).
++  HeliumProfileMigrator: {
++    moduleURI:
++      "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs",
++    platforms: ["linux"],
++  },
+   OperaGXProfileMigrator: {
+     moduleURI:
+       "moz-src:///browser/components/migration/ChromeProfileMigrator.sys.mjs",

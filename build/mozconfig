@@ -1,0 +1,19 @@
+ac_add_options --enable-application=browser
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/../obj
+ac_add_options --enable-release
+ac_add_options --disable-tests
+ac_add_options --disable-crashreporter
+ac_add_options --disable-updater
+ac_add_options --disable-debug-symbols
+ac_add_options --with-wasi-sysroot=/mnt/ssd/firefox-build/wasi/wasi-sdk-34.0-x86_64-linux/share/wasi-sysroot
+ac_add_options --with-branding=browser/branding/folio
+
+# Speed build (2026-11-22): PGO (profile-guided), ThinLTO across C++ and Rust, x86-64-v3 (AVX2/FMA/BMI, CPUs from ~2015).
+# Back to the plain build: mozconfig.bak-before-pgo-20261122
+ac_add_options MOZ_PGO=1
+ac_add_options --enable-lto=cross
+# Like Arch's Firefox: SIMD in Rust code (encoding_rs text decoding etc.). PGO is cross-language (mach patched).
+ac_add_options --enable-rust-simd
+
+# Window class / Wayland app id "folio" (was "firefox-default"): docks and taskbars show Folio's icon. (2026-11-24)
+export MOZ_APP_REMOTINGNAME=folio

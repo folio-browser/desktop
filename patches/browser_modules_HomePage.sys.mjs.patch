@@ -1,0 +1,11 @@
+--- a/browser/modules/HomePage.sys.mjs
++++ b/browser/modules/HomePage.sys.mjs
+@@ -15,7 +15,7 @@
+ });
+ 
+ const kPrefName = "browser.startup.homepage";
+-const kDefaultHomePage = "about:home";
++const kDefaultHomePage = "about:folio-newtab";
+ const kExtensionControllerPref =
+   "browser.startup.homepage_override.extensionControlled";
+ const kHomePageIgnoreListId = "homepage-urls";

@@ -1,0 +1,7 @@
+--- a/browser/extensions/newtab/content-src/styles/activity-stream.scss
++++ b/browser/extensions/newtab/content-src/styles/activity-stream.scss
+@@ -251,3 +251,4 @@
+ @import '../components/Widgets/WidgetsRowAd';
+ 
+ // stylelint-enable no-invalid-position-at-import-rule
++

@@ -1,0 +1,20 @@
+--- a/browser/components/tabbrowser/content/browser-fullZoom.js
++++ b/browser/components/tabbrowser/content/browser-fullZoom.js
+@@ -285,6 +285,17 @@
+       return;
+     }
+ 
++    // Folio: the new tab page is laid out for 100%. The default page size (125%) is for websites, so this page
++    // always starts at 100%, like the PDF viewer above.
++    if (/^about:folio-newtab([?#]|$)/.test(aURI.spec)) {
++      this._applyPrefToZoom(
++        1,
++        browser,
++        this._notifyOnLocationChange.bind(this, browser)
++      );
++      return;
++    }
++
+     // See if the zoom pref is cached.
+     let ctxt = this._loadContextFromBrowser(browser);
+     let pref = this._cps2.getCachedByDomainAndName(aURI.spec, this.name, ctxt);

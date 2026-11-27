@@ -1,0 +1,33 @@
+--- a/dom/media/webaudio/AudioBuffer.cpp
++++ b/dom/media/webaudio/AudioBuffer.cpp
+@@ -4,6 +4,10 @@
+ 
+ #include "AudioBuffer.h"
+ 
++#include "FontVisibilityProvider.h"
++#include "mozilla/dom/Document.h"
++#include "nsRFPService.h"
++
+ #include <numeric>
+ 
+ #include "AudioChannelFormat.h"
+@@ -300,6 +304,19 @@
+       float* jsData = JS_GetFloat32ArrayData(array, &isShared, nogc);
+       MOZ_ASSERT(!isShared);  // Was created as unshared above
+       CopyChannelDataToFloat(mSharedChannels, i, 0, jsData, Length());
++      // Folio: Brave-style audio farbling. Tiny per-site, per-session noise (about 1 part in 2 million, inaudible)
++      // so the AudioContext fingerprint differs between sites.
++      if (RefPtr<nsPIDOMWindowInner> win = GetParentObject()) {
++        uint64_t seed = FontVisibilityProvider::FarbleSeedForDocument(win->GetExtantDoc(), RFPTarget::AudioFarbling);
++        if (seed) {
++          seed = FontVisibilityProvider::FarbleMix(seed, 2 + i);
++          for (uint32_t j = 0; j < Length(); ++j) {
++            uint64_t r = FontVisibilityProvider::FarbleMix(seed, j);
++            float eps = (float(r >> 40) / float(1 << 24) - 0.5f) * 1.0e-6f;
++            jsData[j] += jsData[j] * eps;
++          }
++        }
++      }
+     }
+     mJSChannels[i] = array;
+   }

@@ -1,0 +1,21 @@
+--- a/dom/workers/WorkerNavigator.cpp
++++ b/dom/workers/WorkerNavigator.cpp
+@@ -232,11 +232,17 @@
+ 
+   WorkerPrivate* aWorkerPrivate = GetCurrentThreadWorkerPrivate();
+ 
++  uint64_t farble = 0;
++  if (aWorkerPrivate->ShouldResistFingerprinting(RFPTarget::HWConcurrencyFarbling)) {
++    farble = FontVisibilityProvider::FarbleMix(
++                 FontVisibilityProvider::FarbleSeedForSite(aWorkerPrivate->Domain()), 1) | 1;
++  }
+   return rts->ClampedHardwareConcurrency(
+       aWorkerPrivate->ShouldResistFingerprinting(
+           RFPTarget::NavigatorHWConcurrency),
+       aWorkerPrivate->ShouldResistFingerprinting(
+-          RFPTarget::NavigatorHWConcurrencyTiered));
++          RFPTarget::NavigatorHWConcurrencyTiered),
++      farble);
+ }
+ 
+ StorageManager* WorkerNavigator::Storage() {

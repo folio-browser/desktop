@@ -1,0 +1,18 @@
+--- a/browser/components/urlbar/content/UrlbarInputBase.mjs
++++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
+@@ -1831,6 +1831,15 @@
+    */
+   // eslint-disable-next-line complexity
+   pickResult({ result, event, element = null, browserId = null }) {
++    // Folio: a bang completion row fills the input with the bang instead of loading anything.
++    if (result?.payload?.folioFill) {
++      this.value = result.payload.folioFill;
++      this.focus();
++      this.selectionStart = this.selectionEnd = this.value.length;
++      this.search(this.value);
++      return;
++    }
++
+     if (element?.classList.contains("urlbarView-button-menu")) {
+       this.view.openResultMenu(result, element);
+       return;

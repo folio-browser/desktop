@@ -1,0 +1,30 @@
+--- a/toolkit/components/content-classifier/ContentClassifierFeatureUtils.cpp
++++ b/toolkit/components/content-classifier/ContentClassifierFeatureUtils.cpp
+@@ -14,6 +14,7 @@
+ #include "mozilla/glean/NetwerkMetrics.h"
+ #include "mozilla/Services.h"
+ #include "mozilla/StaticPtr.h"
++#include "mozilla/StaticPrefs_privacy.h"
+ #include "nsAtom.h"
+ #include "nsIChannel.h"
+ #include "nsIEffectiveTLDService.h"
+@@ -72,6 +73,19 @@
+ }
+ 
+ /* static */
++// Folio: its own block lists also apply to first-party subresources (never the document itself).
++// Firefox 161 renamed IsThirdPartyUnlessAnnotating to ShouldClassifyForETP and added AddonMayLoad: kept for both paths.
++bool ContentClassifierFeatureUtils::IsFolioBlockable(
++    const ContentClassifierRequest& aRequest, ClassifyMode aMode) {
++  if (ShouldClassifyForETP(aRequest, aMode)) {
++    return true;
++  }
++  return StaticPrefs::privacy_trackingprotection_content_folio_first_party() &&
++         !aRequest.AddonMayLoad() &&
++         !aRequest.RequestType().EqualsLiteral("document");
++}
++
++/* static */
+ bool ContentClassifierFeatureUtils::ShouldClassifyNonPassiveForETP(
+     const ContentClassifierRequest& aRequest, ClassifyMode aMode) {
+   return !aRequest.IsPassiveContent() && ShouldClassifyForETP(aRequest, aMode);

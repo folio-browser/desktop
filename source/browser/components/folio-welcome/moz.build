@@ -1,0 +1,2 @@
+# Folio first-run tour: a built-in page with browser privileges (import, search, default browser).
+JAR_MANIFESTS += ["jar.mn"]

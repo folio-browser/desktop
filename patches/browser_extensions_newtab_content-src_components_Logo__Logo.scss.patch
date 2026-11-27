@@ -1,0 +1,27 @@
+--- a/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
++++ b/browser/extensions/newtab/content-src/components/Logo/_Logo.scss
+@@ -11,7 +11,8 @@
+ }
+ 
+ .logo-and-wordmark {
+-  $logo-size: 64px;
++  // Folio: bigger cut-out Folio mark, no wordmark (see browser/branding/folio)
++  $logo-size: 104px;
+   $wordmark-size: 105px;
+ 
+   // @nova-cleanup(remove-conditional): Make default behavior, remove .nova-enabled selector
+@@ -76,11 +77,12 @@
+     display: inline-block;
+     height: $logo-size;
+     width: $logo-size;
+-    background: image-set(url('chrome://branding/content/about-logo.png'), url('chrome://branding/content/about-logo@2x.png') 2x) no-repeat center;
+-    background-size: $logo-size;
++    background: url('chrome://branding/content/folio-mark.svg') no-repeat center;
++    background-size: contain;
+   }
+ 
+   .wordmark {
++    display: none !important;
+     background: url('chrome://branding/content/firefox-wordmark.svg') no-repeat center center;
+     background-size: $wordmark-size;
+     -moz-context-properties: fill;

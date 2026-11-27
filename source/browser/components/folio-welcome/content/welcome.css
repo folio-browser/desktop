@@ -1,0 +1,318 @@
+/* Folio first-run tour.
+   Structure and motion follow Zen's welcome (MPL-2.0): letter-by-letter title, then a card with
+   a sidebar and centered choices. Palette is Folio's: dark paper, one accent (magenta). */
+:root {
+  --accent: #ce5caa;
+  --text: #f2eee8;
+  --text-2: rgba(242, 238, 232, 0.62);
+  --text-3: rgba(242, 238, 232, 0.42);
+  --card: rgba(30, 28, 32, 0.93);
+  --side: #161518;
+  --surface: #1d1c20;
+  --tile: #2a282e;
+  --border: rgba(255, 255, 255, 0.12);
+  --sans: system-ui, -apple-system, "Noto Sans", "Segoe UI", Roboto, sans-serif;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+html { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+body {
+  background: #0d0c0b; color: var(--text);
+  font-family: var(--sans);
+  overflow-x: hidden; overflow-y: auto;
+  /* margin:auto on the stage centers it but never pushes it above the top edge (align-items:center clipped
+     tall steps at the top on small windows). */
+  display: flex;
+}
+#start, #steps { margin: auto; }
+button { font: inherit; color: inherit; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+video#bg {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; pointer-events: none;
+}
+.shade { position: fixed; inset: 0; pointer-events: none; background: rgba(13, 12, 11, 0.25); }
+
+/* ---- Stage 1 ---------------------------------------------------------- */
+#start {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+}
+/* The button is taken out of the centering, so the title sits in the true middle. */
+#go { position: absolute; top: calc(100% + 48px); left: 50%; translate: -50% 0; }
+#title {
+  margin: 0; text-align: center;
+  font-size: clamp(48px, 7vw, 92px); font-weight: 700;
+  line-height: 1.05; letter-spacing: -0.03em; white-space: nowrap;
+}
+#title > span { display: block; }
+#title .line-2 { color: var(--text-2); font-weight: 600; }
+.char { display: inline-block; opacity: 0; will-change: transform, opacity; }
+#go {
+  opacity: 0;
+  display: grid; place-items: center;
+  min-width: 128px; min-height: 56px; padding: 0 28px;
+  border: none; border-radius: 12px; cursor: pointer;
+  background: rgba(206, 92, 170, 0.85); color: #fff;
+  transition: scale 0.15s ease-out, filter 0.15s ease-out;
+}
+#go:hover { scale: 1.03; filter: brightness(1.1); }
+#go:active { scale: 1; }
+
+/* ---- Steps: the intro's stage, carried through ------------------------------ */
+#steps {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  width: min(1040px, 92vw);
+  padding: 40px 0 32px;
+  text-align: center;
+}
+#steps[hidden] { display: none; }
+#step-title {
+  margin: 0 0 14px;
+  font-size: clamp(38px, 5vw, 64px); font-weight: 700;
+  line-height: 1.08; letter-spacing: -0.03em;
+}
+#step-text { margin: 0 0 36px; max-width: 620px; font-size: 20px; line-height: 1.55; color: var(--text-2); min-height: 1.55em; }
+#step-note { margin: 22px 0 0; max-width: 640px; min-height: 1.5em; font-size: 18px; line-height: 1.5; color: var(--text-2); }
+
+#choices {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 18px;
+  width: 100%;
+}
+
+/* A choice is a tile: logo on top, name under it. No rows, no panel. */
+.tile {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  width: 168px; min-height: 168px; padding: 22px 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px;
+  background: rgba(20, 19, 22, 0.55);
+  backdrop-filter: blur(18px);
+  cursor: pointer;
+  transition: scale 0.25s var(--spring), border-color 0.2s ease, background-color 0.2s ease;
+}
+.tile:hover { scale: 1.05; border-color: rgba(255, 255, 255, 0.22); }
+.tile[aria-checked="true"] { scale: 1.05; border-color: var(--accent); background: rgba(206, 92, 170, 0.12); }
+.tile-logo { width: 64px; height: 64px; border-radius: 16px; object-fit: contain; }
+.tile-glyph {
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07); color: var(--text-2); font-size: 28px; font-weight: 600;
+}
+.tile-name { font-size: 17px; font-weight: 600; line-height: 1.25; }
+.tile-meta { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-3); }
+.tile-meta svg { flex: 0 0 14px; }
+.tile .tick {
+  position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); opacity: 0; scale: 0.6;
+  transition: opacity 0.15s ease, scale 0.25s var(--spring);
+}
+.tile .tick::after {
+  content: ""; position: absolute; left: 7.5px; top: 4px; width: 5px; height: 10px;
+  border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+.tile[aria-checked="true"] .tick { opacity: 1; scale: 1; }
+
+/* Search shows 12 engines: smaller tiles, always 6 per row (6 + 6, never 7 + 5), every tile the same height.
+   The hover text below gets room for 3 lines up front, so moving between engines never makes the page jump. */
+#choices.engines { --tw: 150px; --gap: 16px; gap: var(--gap); max-width: calc(6 * var(--tw) + 5 * var(--gap)); margin-inline: auto; }
+#choices.engines .tile { width: var(--tw); min-height: 158px; }
+#choices.engines .tile-logo, #choices.engines .tile-glyph { width: 52px; height: 52px; border-radius: 13px; }
+#choices.engines .tile-name { white-space: nowrap; }
+#choices.engines ~ #step-note { min-height: 4.5em; }
+/* "No AI" variants: a small badge in the tile's top-left corner (the tick sits top-right). */
+.tile-logo-wrap { position: relative; display: inline-flex; }
+.tile-badge {
+  position: absolute; right: -14px; bottom: -6px; padding: 2px 7px; border-radius: 999px; white-space: nowrap;
+  background: #2b2a30; box-shadow: 0 0 0 2.5px #141316; color: var(--text); font-size: 10.5px; font-weight: 700; letter-spacing: 0.02em;
+}
+
+/* What to bring along: pills that appear under the chosen browser. */
+#bring {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  width: 100%; margin-top: 26px;
+}
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 44px; padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 22px;
+  background: rgba(20, 19, 22, 0.5);
+  font-size: 16px; font-weight: 500; color: var(--text-2); cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+.pill[aria-pressed="true"] { color: var(--text); border-color: var(--accent); background: rgba(206, 92, 170, 0.14); }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); }
+.pill[aria-pressed="true"] .dot { background: var(--accent); }
+
+/* Big two-way choices (default browser). */
+.choice {
+  min-width: 300px; min-height: 64px; padding: 0 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 32px;
+  background: rgba(20, 19, 22, 0.55); backdrop-filter: blur(18px);
+  font-size: 19px; font-weight: 600; cursor: pointer;
+  transition: scale 0.25s var(--spring), border-color 0.2s ease, background-color 0.2s ease;
+}
+.choice:hover { scale: 1.04; }
+.choice[aria-checked="true"] { border-color: var(--accent); background: rgba(206, 92, 170, 0.14); scale: 1.04; }
+
+#nav { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 44px; }
+/* Back sits left of the arrow without pulling it off center: both sides of the row get equal width. */
+#nav > * { flex: 0 0 auto; }
+#nav::after { content: ""; width: var(--back-w, 0px); }
+#nav[noback]::after { display: none; }
+
+#back {
+  border: none; background: none; cursor: pointer;
+  font-size: 18px; color: var(--text-2); padding: 14px 6px;
+  transition: color 0.15s ease;
+}
+#back:hover { color: var(--text); }
+#back[hidden] { display: none; }
+#next {
+  display: grid; place-items: center;
+  min-width: 128px; min-height: 56px; padding: 0 28px;
+  border: none; border-radius: 12px; cursor: pointer;
+  background: rgba(206, 92, 170, 0.85); color: #fff;
+  font-size: 18px; font-weight: 600;
+  transition: scale 0.15s ease-out, filter 0.15s ease-out;
+}
+#next:hover { scale: 1.03; filter: brightness(1.1); }
+#next:disabled { opacity: 0.6; cursor: progress; }
+
+/* Progress: small dots under the arrow (in the flow, so they never sit on top of a button). */
+#dots { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
+
+#dots span { width: 8px; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.22); transition: width 0.35s var(--spring), background-color 0.2s ease; }
+#dots span.on { width: 28px; background: var(--accent); }
+
+.done-mark { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}
+
+/* Done: the logo, then a recap of the choices. */
+#choices.done { flex-direction: column; align-items: center; gap: 30px; }
+#step-hero:empty { display: none; }
+#step-hero { margin-bottom: 28px; }
+.done-logo { display: block; width: 140px; height: 140px; border-radius: 32px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5); }
+.recap-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+.tile.recap { cursor: default; gap: 8px; }
+.tile.recap:hover { scale: 1; border-color: rgba(255, 255, 255, 0.1); }
+.tile.recap .tile-meta { margin-top: 6px; }
+
+/* Default: apps -> Folio, with a single switch under it. */
+#choices.default { flex-direction: column; align-items: center; gap: 34px; }
+.flow { display: flex; align-items: center; gap: 22px; transition: opacity 0.3s ease; }
+.flow[off] { opacity: 0.35; }
+.flow-apps { display: flex; flex-direction: column; gap: 12px; }
+.flow-app {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px;
+  background: rgba(20, 19, 22, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-2);
+}
+.flow-dots { display: flex; gap: 10px; }
+.flow-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0.25; animation: flow 1.4s ease-in-out infinite; }
+.flow-dots span:nth-child(2) { animation-delay: 0.15s; }
+.flow-dots span:nth-child(3) { animation-delay: 0.3s; }
+.flow-dots span:nth-child(4) { animation-delay: 0.45s; }
+.flow-dots span:nth-child(5) { animation-delay: 0.6s; }
+.flow[off] .flow-dots span { animation: none; }
+@keyframes flow { 0%, 100% { opacity: 0.2; transform: none; } 40% { opacity: 1; transform: translateX(4px); } }
+.flow-logo { width: 120px; height: 120px; border-radius: 28px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45); }
+
+.switch {
+  display: flex; align-items: center; gap: 20px;
+  min-height: 64px; padding: 0 16px 0 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 32px;
+  background: rgba(20, 19, 22, 0.55); backdrop-filter: blur(18px);
+  font-size: 19px; font-weight: 600; cursor: pointer;
+}
+.switch-track {
+  position: relative; width: 56px; height: 32px; border-radius: 16px;
+  background: rgba(255, 255, 255, 0.18); transition: background-color 0.2s ease;
+}
+.switch-track::after {
+  content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; transition: transform 0.3s var(--spring);
+}
+.switch[aria-checked="true"] .switch-track { background: var(--accent); }
+.switch[aria-checked="true"] .switch-track::after { transform: translateX(24px); }
+
+/* One row of pills per picked browser. */
+.bring-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; }
+.bring-from { display: inline-flex; align-items: center; gap: 8px; margin-right: 6px; font-size: 15px; font-weight: 600; color: var(--text-2); }
+.bring-from img { width: 22px; height: 22px; border-radius: 6px; }
+.recap-logos { display: flex; }
+.recap-logos img { width: 48px; height: 48px; border-radius: 13px; border: 2px solid #141316; }
+.recap-logos img + img { margin-left: -14px; }
+
+/* What reaches Mozilla: three plain rows, a switch where it can be turned off. */
+#choices.disclose { flex-direction: column; align-items: stretch; gap: 12px; max-width: 720px; }
+.disclose-row {
+  display: flex; align-items: center; gap: 24px; text-align: left;
+  padding: 18px 22px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 22px;
+  background: rgba(20, 19, 22, 0.55); backdrop-filter: blur(18px);
+}
+.disclose-text { flex: 1; min-width: 0; }
+.disclose-name { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+.disclose-what { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-2); }
+.disclose-tag { flex-shrink: 0; font-size: 14px; color: var(--text-3); }
+.switch.mini { min-height: 0; padding: 0; border: none; background: none; backdrop-filter: none; }
+.disclose-keep { margin-left: 10px; font-size: 13px; font-weight: 500; color: var(--accent); }
+
+/* Smaller windows (laptops, a tiled window): everything a step shows still fits without scrolling. */
+@media (max-height: 860px) {
+  #steps { padding: 24px 0 20px; }
+  #step-title { font-size: clamp(32px, 4.2vw, 52px); margin-bottom: 10px; }
+  #step-text { font-size: 18px; margin-bottom: 26px; }
+  #step-note { margin-top: 16px; font-size: 16px; }
+  #nav { margin-top: 28px; }
+  #dots { margin-top: 20px; }
+  .tile { width: 150px; min-height: 148px; padding: 18px 12px 14px; gap: 12px; }
+  .tile-logo, .tile-glyph { width: 54px; height: 54px; }
+  #choices.engines { --tw: 138px; }
+  #choices.engines .tile { min-height: 140px; }
+  #choices.engines .tile-logo, #choices.engines .tile-glyph { width: 46px; height: 46px; }
+  .done-logo { width: 104px; height: 104px; border-radius: 26px; }
+  #step-hero { margin-bottom: 18px; }
+  .flow-logo { width: 96px; height: 96px; border-radius: 24px; }
+  .flow-app { width: 46px; height: 46px; border-radius: 13px; }
+  .disclose-row { padding: 12px 20px; }
+  #choices.disclose { gap: 10px; }
+  .disclose-name { font-size: 17px; margin-bottom: 2px; }
+  .disclose-what { font-size: 15px; line-height: 1.45; }
+
+  #choices.default { gap: 24px; }
+  #choices.done { gap: 22px; }
+}
+@media (max-height: 680px) {
+  #step-title { font-size: 34px; }
+  #step-text { font-size: 16px; margin-bottom: 18px; }
+  .tile { width: 132px; min-height: 124px; padding: 14px 10px 12px; gap: 8px; }
+  .tile-logo, .tile-glyph { width: 44px; height: 44px; }
+  #choices.engines { --tw: 116px; --gap: 12px; }
+  #choices.engines .tile { min-height: 112px; padding: 12px 8px 10px; gap: 6px; }
+  #choices.engines .tile-logo, #choices.engines .tile-glyph { width: 40px; height: 40px; border-radius: 11px; }
+  #choices.engines .tile-name { font-size: 15px; }
+  #choices.engines .tile-meta { font-size: 12px; }
+  #choices.engines .tile-badge { right: -12px; bottom: -5px; font-size: 9.5px; padding: 1px 6px; }
+  #choices.engines ~ #step-note { margin-top: 12px; font-size: 15px; }
+  .done-logo { width: 80px; height: 80px; border-radius: 20px; }
+  .disclose-what { font-size: 14px; }
+  .disclose-row { padding: 10px 18px; }
+  #choices.disclose { gap: 8px; }
+  #nav { margin-top: 20px; }
+
+}
+
+/* Layout step: wider tiles with a schematic of each layout instead of a logo. */
+#choices.layouts .tile.layout { width: 210px; }
+.layout-thumb { display: block; width: 168px; }
+.layout-thumb svg { display: block; width: 100%; height: auto; border-radius: 10px; }
+.tile.recap.layout .layout-thumb { width: 64px; }
+@media (max-height: 860px) {
+  #choices.layouts .tile.layout { width: 186px; }
+  .layout-thumb { width: 146px; }
+}

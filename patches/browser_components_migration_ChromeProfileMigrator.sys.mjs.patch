@@ -1,0 +1,30 @@
+--- a/browser/components/migration/ChromeProfileMigrator.sys.mjs
++++ b/browser/components/migration/ChromeProfileMigrator.sys.mjs
+@@ -1362,6 +1362,27 @@
+ /**
+  * Vivaldi migrator
+  */
++/**
++ * Folio: Helium (Chromium-based, by imput). Same data format as Chrome.
++ */
++export class HeliumProfileMigrator extends ChromeProfileMigrator {
++  static get key() {
++    return "helium";
++  }
++
++  static get displayNameL10nID() {
++    return "migration-wizard-migrator-display-name-helium";
++  }
++
++  static get brandImage() {
++    return "file:///usr/share/icons/hicolor/256x256/apps/helium-browser.png";
++  }
++
++  _chromeUserDataPathSuffix = "Helium";
++  _keychainServiceName = "Helium Safe Storage";
++  _keychainAccountName = "Helium";
++}
++
+ export class VivaldiProfileMigrator extends ChromeProfileMigrator {
+   static get key() {
+     return "vivaldi";

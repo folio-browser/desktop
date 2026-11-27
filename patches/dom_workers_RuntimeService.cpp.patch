@@ -1,0 +1,25 @@
+--- a/dom/workers/RuntimeService.cpp
++++ b/dom/workers/RuntimeService.cpp
+@@ -2100,7 +2100,8 @@
+ }
+ 
+ uint32_t RuntimeService::ClampedHardwareConcurrency(bool aRFPHardcoded,
+-                                                    bool aRFPTiered) const {
++                                                    bool aRFPTiered,
++                                                    uint64_t aFarbleSeed) const {
+   // The Firefox Hardware Report says 34% of Firefox users have exactly 4 cores.
+   // When the resistFingerprinting pref is set, we want to blend into the crowd
+   // so spoof navigator.hardwareConcurrency = 4 to reduce user uniqueness. On
+@@ -2137,6 +2138,12 @@
+     (void)unclampedHardwareConcurrency.compareExchange(0, numberOfProcessors);
+   }
+ 
++  // Folio: per-site random core count between 2 and the real number (at most 16).
++  if (MOZ_UNLIKELY(aFarbleSeed != 0) && unclampedHardwareConcurrency > 2) {
++    uint32_t top = std::min(uint32_t(unclampedHardwareConcurrency), uint32_t(16));
++    return 2 + uint32_t(aFarbleSeed >> 8) % (top - 1);
++  }
++
+   if (MOZ_UNLIKELY(aRFPTiered)) {
+     if (unclampedHardwareConcurrency >= 8) {
+       return 8;

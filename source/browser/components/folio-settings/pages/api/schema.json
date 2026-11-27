@@ -1,0 +1,11 @@
+[
+  {
+    "namespace": "folioTheme",
+    "description": "Folio's wallpaper + palette for its built-in add-ons (in-process, replaces the 127.0.0.1:8791 bridge).",
+    "functions": [
+      { "name": "getState", "type": "function", "async": true, "parameters": [] },
+      { "name": "waitForChange", "type": "function", "async": true, "parameters": [{ "name": "v", "type": "string" }] },
+      { "name": "getWallpaper", "type": "function", "async": true, "parameters": [] }
+    ]
+  }
+]

@@ -1,0 +1,1 @@
+Icons in this folder come from Zen Browser (github.com/zen-browser/desktop), licensed MPL-2.0.

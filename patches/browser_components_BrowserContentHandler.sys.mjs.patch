@@ -1,0 +1,57 @@
+--- a/browser/components/BrowserContentHandler.sys.mjs
++++ b/browser/components/BrowserContentHandler.sys.mjs
+@@ -623,6 +623,28 @@
+       openPreferences(cmdLine);
+       cmdLine.preventDefault = true;
+     }
++    // Folio: the first run of a fresh profile opens the welcome tour as its own
++    // window (no tabs, no URL bar), the same way --chrome does. The tour opens
++    // the real browser window itself when it finishes.
++    if (
++      !chromeParam &&
++      !cmdLine.preventDefault &&
++      !Services.prefs.getBoolPref("folio.welcome.completed", false) &&
++      needHomepageOverride(false /* updateMilestones */) === OVERRIDE_NEW_PROFILE
++    ) {
++      let argArray = Cc["@mozilla.org/array;1"].createInstance(
++        Ci.nsIMutableArray
++      );
++      argArray.appendElement(null);
++      Services.ww.openWindow(
++        null,
++        Services.urlFormatter.formatURLPref("startup.homepage_welcome_url"),
++        "_blank",
++        "chrome,dialog=no,all" + this.getFeatures(cmdLine),
++        argArray
++      );
++      cmdLine.preventDefault = true;
++    }
+     if (cmdLine.handleFlag("silent", false)) {
+       cmdLine.preventDefault = true;
+     }
+@@ -865,12 +887,19 @@
+           case OVERRIDE_NEW_PROFILE:
+             // New profile.
+             gFirstRunProfile = true;
+-            overridePage = Services.urlFormatter.formatURLPref(
+-              "startup.homepage_welcome_url"
+-            );
+-            additionalPage = Services.urlFormatter.formatURLPref(
+-              "startup.homepage_welcome_url.additional"
+-            );
++            // Folio: the welcome tour is shown once. The tour sets
++            // folio.welcome.completed when the user finishes it.
++            if (Services.prefs.getBoolPref("folio.welcome.completed", false)) {
++              overridePage = "";
++              additionalPage = "";
++            } else {
++              overridePage = Services.urlFormatter.formatURLPref(
++                "startup.homepage_welcome_url"
++              );
++              additionalPage = Services.urlFormatter.formatURLPref(
++                "startup.homepage_welcome_url.additional"
++              );
++            }
+             // Turn on 'later run' pages for new profiles.
+             lazy.LaterRun.enable(lazy.LaterRun.ENABLE_REASON_NEW_PROFILE);
+             break;

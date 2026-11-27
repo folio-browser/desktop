@@ -1,0 +1,24 @@
+--- a/toolkit/components/resistfingerprinting/FontVisibilityProvider.h
++++ b/toolkit/components/resistfingerprinting/FontVisibilityProvider.h
+@@ -9,6 +9,7 @@
+ 
+ #include "mozilla/Maybe.h"
+ #include "nsICookieJarSettings.h"
++#include "nsString.h"
+ 
+ class nsPresContext;
+ class gfxFontFamily;
+@@ -42,6 +43,13 @@
+   virtual nsICookieJarSettings* GetCookieJarSettings() const = 0;
+   virtual mozilla::Maybe<FontVisibility> MaybeInheritFontVisibility() const = 0;
+   virtual void UserFontSetUpdated(gfxUserFontEntry* aUpdatedFont = nullptr) = 0;
++  // Folio: 0 = no font farbling; otherwise a seed that is stable for one site during one browser session.
++  virtual uint64_t GetFontFarbleSeed() const { return 0; }
++  static uint64_t FarbleSeedForSite(const nsACString& aSite);
++  // Mix a per-feature salt into a seed (so audio/plugins/cores do not share one random stream).
++  static uint64_t FarbleMix(uint64_t aSeed, uint64_t aSalt);
++  // 0 if this document should not be farbled for aTarget, else the site seed.
++  static uint64_t FarbleSeedForDocument(mozilla::dom::Document* aDoc, mozilla::RFPTarget aTarget);
+ 
+   void ReportBlockedFontFamily(const gfxFontFamily& aFamily) const;
+   void ReportBlockedFontFamily(const mozilla::fontlist::Family& aFamily) const;

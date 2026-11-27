@@ -1,0 +1,1796 @@
+--- a/browser/themes/shared/browser-shared.css
++++ b/browser/themes/shared/browser-shared.css
+@@ -1791,3 +1791,1793 @@
+ #bookmarksToolbarFolderMenu {
+   --menuitem-icon: url("chrome://browser/skin/places/bookmarksToolbar.svg");
+ }
++
++/* ---- Folio: Arc-style window ---------------------------------------------------- */
++/* No close / minimize / maximize buttons on a tiling window manager (it handles windows). On floating desktops they
++   stay: Folio draws its own title bar there, so they are the only way to close or maximize. (folio-tiling: folio-sidebar.js) */
++:root[folio-tiling] .titlebar-buttonbox-container,
++:root[folio-tiling] .titlebar-spacer { display: none !important; }
++:root:not([folio-tiling]) .titlebar-spacer { display: none !important; }
++
++:root {
++  --folio-frame: #131216;
++  --folio-accent: #ce5caa;
++}
++/* One quiet frame color around everything: toolbar, sidebar and the gaps. */
++#navigator-toolbox,
++#nav-bar,
++#browser,
++#sidebar-main,
++#sidebar-box { background-color: var(--folio-frame) !important; }
++#nav-bar { border: none !important; box-shadow: none !important; }
++#navigator-toolbox { border-bottom: none !important; }
++
++/* The page is a card floating in the frame. */
++#tabbrowser-tabbox {
++  margin: 0 8px 8px 2px;
++  border-radius: 12px;
++  overflow: clip;
++  outline: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.06);
++  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
++}
++
++/* Address bar: quieter, rounder. */
++#urlbar-background { border-radius: 10px !important; border-color: transparent !important; }
++#urlbar[focused] > #urlbar-background { outline: 1px solid var(--folio-accent) !important; }
++
++/* Vertical tabs: roomy rows, the selected one gets the accent edge. */
++#tabbrowser-tabs[orient="vertical"] .tab-background { border-radius: 10px !important; }
++#tabbrowser-tabs[orient="vertical"] .tabbrowser-tab[selected] .tab-background {
++  box-shadow: inset 2px 0 0 var(--folio-accent) !important;
++}
++
++/* ---- Folio: element switches. Each one is a pref; the Appearance page flips them. ---- */
++@media -moz-pref("folio.hide.back") { #back-button { display: none !important; } }
++@media -moz-pref("folio.hide.forward") { #forward-button { display: none !important; } }
++@media -moz-pref("folio.hide.reload") { #stop-reload-button, #reload-button, #stop-button { display: none !important; } }
++@media -moz-pref("folio.hide.home") { #home-button { display: none !important; } }
++@media -moz-pref("folio.hide.sidebarbtn") { #sidebar-button { display: none !important; } }
++@media -moz-pref("folio.hide.alltabs") { #alltabs-button { display: none !important; } }
++@media -moz-pref("folio.hide.extensions") { #unified-extensions-button { display: none !important; } }
++@media -moz-pref("folio.hide.menu") { #PanelUI-menu-button { display: none !important; } }
++@media -moz-pref("folio.hide.engine") { #urlbar-searchmode-switcher { display: none !important; } }
++@media -moz-pref("folio.hide.shield") { #tracking-protection-icon-container { display: none !important; } }
++@media -moz-pref("folio.hide.siteinfo") { #identity-box { display: none !important; } }
++@media -moz-pref("folio.hide.star") { #star-button-box { display: none !important; } }
++@media -moz-pref("folio.hide.tabclose") { .tabbrowser-tab .tab-close-button { display: none !important; } }
++@media -moz-pref("folio.hide.newtab") { #vertical-tabs-newtab-button, #tabs-newtab-button, #new-tab-button { display: none !important; } }
++@media -moz-pref("folio.hide.shadow") { #tabbrowser-tabbox { box-shadow: none !important; } }
++@media -moz-pref("folio.hide.outline") { #tabbrowser-tabbox { outline: none !important; } }
++@media -moz-pref("folio.hide.gaps") { #tabbrowser-tabbox { margin: 0 !important; border-radius: 0 !important; } }
++
++/* ---- Folio: drag toolbar buttons anytime ---- */
++.folio-dragging { opacity: 0.25 !important; }
++.folio-drag-ghost {
++  position: fixed !important; z-index: 2147483647; pointer-events: none !important; margin: 0 !important;
++  display: flex; align-items: center; justify-content: center;
++  border-radius: 8px; background: rgba(40, 38, 44, 0.95);
++  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); scale: 1.08;
++  transition: opacity 0.15s ease, scale 0.15s ease;
++}
++.folio-drag-ghost[removing] { opacity: 0.45; scale: 0.9; outline: 1px dashed var(--folio-accent); }
++.folio-drag-marker {
++  position: fixed; z-index: 2147483646; width: 2px; border-radius: 1px; pointer-events: none;
++  background: var(--folio-accent);
++}
++:root[folio-dragging] { cursor: grabbing; }
++.folio-toast {
++  position: fixed; z-index: 2147483647; left: 50%; bottom: 28px; translate: -50% 0;
++  display: flex; align-items: center; gap: 16px; padding: 10px 12px 10px 18px;
++  border-radius: 14px; background: var(--folio-panel-bg, #24222a); color: var(--folio-text, #f2eee8); font: menu; font-size: 14px;
++  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
++}
++.folio-toast button {
++  border: none; border-radius: 10px; padding: 6px 14px; cursor: pointer;
++  background: var(--folio-accent); color: #fff; font: inherit; font-weight: 600;
++}
++
++/* ---- Folio: toolbar at the bottom (drag the address bar to the bottom edge) ---- */
++@media -moz-pref("folio.toolbar.bottom") {
++  #navigator-toolbox { order: 1; }
++  #tabbrowser-tabbox { margin: 8px 8px 0 2px; }
++}
++/* While dragging, the toolbar you can drop on glows faintly. */
++[folio-drop-target] { box-shadow: inset 0 0 0 1px rgba(206, 92, 170, 0.5) !important; border-radius: 10px; }
++
++/* ---- Folio: toolbar at the top of the sidebar (Zen / Vivaldi layout) ---- */
++/* The toolbar stays in its usual place in the DOM and is drawn over the sidebar's top area. */
++:root[folio-sidebar-toolbar] #navigator-toolbox {
++  position: fixed !important;
++  top: 0;
++  left: var(--folio-sidebar-left, 0px);
++  width: var(--folio-sidebar-width, 280px);
++  z-index: 3;
++  background: transparent !important;
++}
++:root[folio-sidebar-toolbar] sidebar-main { padding-top: var(--folio-toolbar-height, 88px) !important; }
++:root[folio-sidebar-toolbar] #nav-bar {
++  background: transparent !important;
++  border: none !important;
++  box-shadow: none !important;
++  padding: 6px 6px 4px !important;
++  min-height: 0 !important;
++  position: relative;
++  --urlbar-container-min-width: 0px;
++}
++:root[folio-sidebar-toolbar] #nav-bar-customization-target { flex-wrap: wrap !important; row-gap: 8px; padding-right: 36px; }
++/* Buttons share one row; the address bar takes the full width under them. */
++:root[folio-sidebar-toolbar] #nav-bar #urlbar-container {
++  order: 99;
++  flex: 1 0 100% !important;
++  width: auto !important;
++  max-width: none !important;
++  min-width: 0 !important;
++  margin: 0 -36px 0 0 !important;
++}
++:root[folio-sidebar-toolbar] #nav-bar toolbarspring,
++:root[folio-sidebar-toolbar] #nav-bar #vertical-spacer { display: none !important; }
++/* The menu button sits outside the button row: pin it to the row's right end. */
++:root[folio-sidebar-toolbar] #nav-bar #PanelUI-button { position: absolute; top: 6px; right: 6px; }
++/* Nothing is left above the page, so the card gets an even gap all around. */
++:root[folio-sidebar-toolbar] #tabbrowser-tabbox { margin: 8px 8px 8px 2px; }
++
++/* ---- Folio: back / forward only show when there is somewhere to go. Reload always stays. ---- */
++#back-button[disabled],
++#forward-button[disabled] { display: none !important; }
++
++/* ---- Folio: address bar at the BOTTOM of the sidebar, just above the bookmarks/history icons.
++   The button row stays at the top of the sidebar; only the address bar moves down. ---- */
++:root[folio-sidebar-toolbar-bottom] #nav-bar #urlbar-container {
++  position: fixed !important;
++  left: calc(var(--folio-sidebar-left, 0px) + 6px);
++  width: calc(var(--folio-sidebar-width, 280px) - 12px) !important;
++  /* just above the tool icons (spaces are at the top of the list now) */
++  bottom: calc(var(--folio-tools-height, 52px) + 16px);
++  margin: 0 !important;
++  flex: none !important;
++}
++:root[folio-sidebar-toolbar-bottom] #folio-sidebar-body { padding-bottom: 56px; }
++
++
++/* ---- Folio sidebar (folio-sidebar.js): our own, the only sidebar. Ctrl+S hides it ---- */
++/* Firefox's vertical-tabs sidebar and its horizontal tab strip are replaced by ours. */
++#sidebar-container, #sidebar-box, #sidebar-launcher-splitter, #sidebar-splitter { display: none !important; }
++:root:not([folio-sidebar-hidden]) #TabsToolbar { display: none !important; }
++#folio-sidebar {
++  width: 260px;
++  min-width: 220px;
++  padding: 8px 8px 10px;
++  border-inline-end: 1px solid color-mix(in srgb, currentColor 10%, transparent);
++}
++:root[folio-sidebar-hidden] #folio-sidebar { display: none; }
++/* While it slides (folio-sidebar.js setHidden): the content keeps its full width and is revealed/clipped, so nothing re-wraps. */
++:root[folio-sidebar-animating] #folio-sidebar { overflow: hidden; }
++:root[folio-sidebar-animating] #folio-sidebar-body,
++:root[folio-sidebar-animating] #folio-sidebar-bottom { min-width: calc(var(--folio-sidebar-inner, 260px) - 17px); flex-shrink: 0; }
++/* The toolbar drawn over the sidebar keeps its full width too and is clipped to the sidebar's current width. */
++:root[folio-sidebar-animating][folio-sidebar-toolbar] #navigator-toolbox {
++  width: var(--folio-sidebar-inner, 280px) !important;
++  clip-path: inset(0 max(0px, calc(var(--folio-sidebar-inner, 280px) - var(--folio-sidebar-width, 280px))) 0 0);
++}
++:root[folio-sidebar-animating][folio-sidebar-toolbar-bottom] #nav-bar #urlbar-container {
++  width: calc(var(--folio-sidebar-inner, 280px) - 12px) !important;
++  clip-path: inset(0 max(0px, calc(var(--folio-sidebar-inner, 280px) - var(--folio-sidebar-width, 280px))) 0 0);
++}
++.folio-side-row { align-items: center; gap: 2px; }
++#folio-sidebar-top { justify-content: space-between; padding-bottom: 8px; }
++#folio-sidebar-tabs { overflow-y: auto; gap: 2px; }
++.folio-side-button {
++  appearance: none;
++  width: 34px; height: 34px; min-width: 34px;
++  margin: 0; padding: 0; border: none; border-radius: 10px;
++  background: transparent; color: inherit;
++  display: flex; align-items: center; justify-content: center;
++}
++.folio-side-button:hover, .folio-side-tab:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
++.folio-side-button .toolbarbutton-icon {
++  width: 18px; height: 18px; margin: 0; padding: 0;
++  background-color: currentColor;
++  mask-size: contain; mask-repeat: no-repeat; mask-position: center;
++}
++.folio-side-button .toolbarbutton-text,
++.folio-side-button .toolbarbutton-badge-stack { display: none; }
++.folio-side-tab {
++  align-items: center; gap: 8px;
++  height: 34px; padding: 0 6px 0 10px;
++  border-radius: 10px;
++}
++.folio-side-tab[selected] { background: color-mix(in srgb, currentColor 16%, transparent); }
++.folio-side-tab-icon { width: 16px; height: 16px; }
++.folio-side-tab-title { font-size: 13px; }
++.folio-side-tab-close {
++  appearance: none; width: 22px; height: 22px; min-width: 22px;
++  margin: 0; padding: 0; border: none; border-radius: 6px; background: transparent;
++  display: flex; align-items: center; justify-content: center;
++}
++.folio-side-tab-close:hover { background: color-mix(in srgb, currentColor 14%, transparent); }
++.folio-side-tab-close .toolbarbutton-icon {
++  width: 12px; height: 12px; background-color: currentColor;
++  mask-size: contain; mask-repeat: no-repeat; mask-position: center;
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
++}
++.folio-side-tab-close .toolbarbutton-text,
++.folio-side-tab-close .toolbarbutton-badge-stack { display: none; }
++.folio-side-button[data-folio-icon="plus"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="download"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11M7 10l5 5 5-5M5 20h14'/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="puzzle"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='6' height='6' rx='1'/%3E%3Crect x='14' y='4' width='6' height='6' rx='1'/%3E%3Crect x='4' y='14' width='6' height='6' rx='1'/%3E%3Crect x='14' y='14' width='6' height='6' rx='1'/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="bookmark"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M6 3h12v18l-6-4-6 4z'/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="clock"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="gear"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1'/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="palette"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.4-1.1-.2-.3-.4-.6-.4-1 0-.9.7-1.6 1.6-1.6H17a4 4 0 0 0 4-4c0-4.4-4-7.7-9-7.7z'/%3E%3C/svg%3E");
++}
++
++/* Our sidebar: the address bar sits over its top, so the icon row and tabs start below it. */
++:root[folio-sidebar-toolbar] #folio-sidebar { padding-top: var(--folio-toolbar-height, 88px); }
++
++/* Our sidebar: resize handle on the right edge (folio-sidebar.js). */
++#folio-sidebar { position: relative; min-width: 0; }
++#folio-sidebar-resizer {
++  position: absolute; top: 0; bottom: 0; right: -4px;
++  width: 8px; cursor: ew-resize; z-index: 4;
++}
++#folio-sidebar-resizer:hover { background: color-mix(in srgb, currentColor 14%, transparent); }
++/* Real GNOME Adwaita icons (applications-system, document-open-recent). */
++.folio-side-button[data-folio-icon="gear"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216px%22 height=%2216px%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22black%22 d=%22M8 0c-.550781 0-1 .449219-1 1v.238281c0 .46875-.375.902344-.820312 1.046875-.023438.007813-.042969.011719-.0625.019532-.445313.148437-1.003907.019531-1.28125-.359376L4.695312 1.75c-.15625-.214844-.390624-.359375-.652343-.398438-.261719-.042968-.527344.019532-.742188.175782-.449219.324218-.550781.953125-.222656 1.398437L3.21875 3.125c.277344.378906.226562.953125-.050781 1.328125-.011719.015625-.023438.035156-.035157.050781-.273437.378906-.804687.601563-1.25.457032l-.230468-.074219C1.128906 4.714844.5625 5.003906.394531 5.527344c-.171875.527344.113281 1.089844.640625 1.261718l.222656.074219c.445313.144531.738282.636719.75 1.101563v.070312c.015626.464844-.304687.960938-.746093 1.105469l-.226563.074219c-.527344.167968-.8125.734375-.640625 1.257812.167969.527344.734375.8125 1.257813.644532l.230468-.078126c.445313-.144531.976563.078126 1.25.457032.011719.019531.027344.035156.039063.050781.277344.375.324219.953125.050781 1.328125l-.144531.203125c-.324219.445313-.226563 1.070313.222656 1.394531.445313.324219 1.070313.226563 1.394531-.21875l.144532-.199218c.273437-.375.835937-.507813 1.277344-.359376.019531.007813.042968.011719.0625.019532C6.625 13.855469 7 14.292969 7 14.761719V15c0 .550781.449219 1 1 1 .554688 0 1-.449219 1-1v-.238281c0-.46875.378906-.90625.824219-1.046875.019531-.007813.039062-.015625.0625-.019532.441406-.148437 1.003906-.019531 1.277343.359376l.144532.199218c.324218.445313.949218.542969 1.394531.21875.445313-.324218.546875-.949218.222656-1.394531L12.78125 12.875c-.277344-.375-.226562-.953125.050781-1.328125.011719-.015625.023438-.03125.035157-.050781.273437-.378906.804687-.601563 1.25-.457032l.234374.078126c.523438.167968 1.089844-.117188 1.257813-.644532.171875-.523437-.117187-1.089844-.640625-1.257812l-.230469-.074219c-.445312-.144531-.734375-.640625-.742187-1.105469-.003906-.023437-.003906-.046875-.003906-.070312-.015626-.464844.300781-.957032.746093-1.101563l.230469-.074219c.523438-.171874.8125-.734374.640625-1.261718-.171875-.523438-.734375-.8125-1.257813-.640625l-.230468.074219c-.445313.144531-.976563-.078126-1.25-.457032-.015625-.015625-.027344-.035156-.039063-.050781-.277343-.375-.324219-.949219-.050781-1.328125l.144531-.199219c.324219-.445312.226563-1.074219-.222656-1.398437-.214844-.15625-.480469-.21875-.742187-.175782-.261719.039063-.5.183594-.652344.398438l-.144532.195312c-.273437.378907-.835937.507813-1.277343.363282-.023438-.007813-.042969-.015625-.066407-.023438C9.378906 2.144531 9 1.707031 9 1.238281V1c0-.550781-.449219-1-1-1m0 4c.871094 0 1.675781.273438 2.332031.742188.003907.007812.011719.015624.019531.023437.011719.003906.019532.007813.03125.015625.660157.484375 1.160157 1.175781 1.421876 1.976562v.007813s.003906.003906.003906.007813c.292968.851562.15625 1.65625 0 2.457031 0 0-.003906.003906-.003906.007812v.003907c-.257813.800781-.757813 1.488281-1.414063 1.976562-.015625.003906-.027344.011719-.039063.019531-.007812.007813-.015624.011719-.019531.019531C9.675781 11.726562 8.871094 12 8 12c-.855469 0-1.644531-.265625-2.289062-.714844-.019532-.015625-.042969-.03125-.0625-.046875-.011719-.007812-.023438-.015625-.035157-.019531-.648437-.484375-1.148437-1.160156-1.40625-1.945312l-.011719-.035157c-.003906-.007812-.007812-.011719-.011718-.019531-.28125-.847656-.148438-1.644531 0-2.4375.003906-.003906.007812-.011719.011718-.015625.003907-.015625.007813-.027344.011719-.039063.261719-.789062.761719-1.464843 1.414063-1.945312.007812-.007812.019531-.011719.027344-.015625.019531-.015625.042968-.035156.0625-.050781C6.355469 4.265625 7.144531 4 8 4m0 0%22/%3E%3C/svg%3E");
++}
++.folio-side-button[data-folio-icon="clock"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216px%22 height=%2216px%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22black%22 d=%22M8.488281.019531C4.359375.019531 1 3.375 1 7.507812c0 4.128907 3.359375 7.484376 7.488281 7.484376 4.128907 0 7.488281-3.355469 7.488281-7.484376 0-4.132812-3.359374-7.48828-7.488281-7.48828m0 1.972657C11.539062 1.992188 14 4.457031 14 7.507812c0 3.046876-2.460938 5.511719-5.511719 5.511719s-5.511719-2.464843-5.511719-5.511719c0-3.050781 2.460938-5.515624 5.511719-5.515624M11.496094 4c-.03125 0-.066406 0-.101563.007812-.097656.023438-.183593.078126-.25.15625l-2.65625 2.65625-1.65625-1.65625c-.109375-.179687-.3125-.269531-.515625-.234374-.207031.039062-.363281.199218-.402344.402343s.054688.410157.230469.519531l2 2c.191407.179688.496094.179688.6875 0l3-3c.136719-.140624.179688-.351562.109375-.535156-.074218-.183594-.246094-.308594-.445312-.316406m0 0%22/%3E%3C/svg%3E");
++}
++
++/* ---- Folio sidebar views (History, Downloads) inside the sidebar. Colors are tokens for the theme editor. ---- */
++:root {
++  --folio-accent: #7aa2f7;
++  --folio-accent-soft: color-mix(in srgb, var(--folio-accent) 22%, transparent);
++  --folio-text: currentColor;
++  --folio-muted: color-mix(in srgb, currentColor 58%, transparent);
++  --folio-surface: color-mix(in srgb, currentColor 7%, transparent);
++  --folio-grid: color-mix(in srgb, currentColor 10%, transparent);
++}
++.folio-side-button[data-folio-icon="download"] .toolbarbutton-icon {
++  mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216px%22 height=%2216px%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22black%22 d=%22M7.984375 0c-.550781 0-1 .449219-1 1v8.585938L4.691406 7.292969C4.503906 7.105469 4.25 7 3.984375 7s-.519531.105469-.707031.292969c-.390625.390625-.390625 1.023437 0 1.414062l4 4c.390625.390625 1.023437.390625 1.414062 0l4-4c.390625-.390625.390625-1.023437 0-1.414062s-1.023437-.390625-1.414062 0L8.984375 9.585938V1c0-.550781-.449219-1-1-1m-6 14v2h12v-2zm0 0%22/%3E%3C/svg%3E");
++}
++.folio-side-button[active] { background: var(--folio-accent-soft); }
++#folio-sidebar-body { min-height: 0; }
++#folio-sidebar-view { min-height: 0; gap: 8px; }
++.folio-view-head { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 4px; }
++.folio-view-title { font-size: 15px; font-weight: 600; }
++.folio-view-close {
++  appearance: none; border: none; background: transparent; color: inherit;
++  width: 26px; height: 26px; border-radius: 8px; font-size: 18px; line-height: 1; cursor: pointer;
++}
++.folio-view-close:hover { background: var(--folio-surface); }
++.folio-view-search {
++  width: 100%; box-sizing: border-box; padding: 6px 10px; border-radius: 10px; border: none;
++  background: var(--folio-surface); color: inherit; font: inherit; font-size: 13px;
++}
++.folio-view-search:focus { outline: 2px solid var(--folio-accent); outline-offset: 0; }
++.folio-view-list { overflow-y: auto; min-height: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
++.folio-view-day { font-size: 11px; color: var(--folio-muted); padding: 8px 4px 2px; }
++.folio-view-empty { font-size: 13px; color: var(--folio-muted); padding: 12px 4px; }
++.folio-view-row, .folio-dl-row {
++  appearance: none; display: flex; flex-direction: column; align-items: stretch; gap: 3px;
++  width: 100%; box-sizing: border-box; padding: 7px 8px; border: none; border-radius: 10px;
++  background: transparent; color: inherit; font: inherit; text-align: start; cursor: pointer;
++}
++.folio-view-row:hover, .folio-dl-row:hover { background: var(--folio-surface); }
++.folio-dl-row.selected { background: var(--folio-accent-soft); }
++.folio-view-row-title { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++.folio-view-row-sub { font-size: 11px; color: var(--folio-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++.folio-dl-bar { display: block; height: 3px; border-radius: 2px; background: var(--folio-grid); overflow: hidden; }
++.folio-dl-bar-fill { display: block; height: 100%; background: var(--folio-accent); }
++.folio-bars { width: 100%; height: auto; display: block; }
++.folio-bar { fill: var(--folio-accent); }
++.folio-bar-empty { fill: var(--folio-accent-soft); }
++.folio-axis { fill: var(--folio-muted); font-size: 10px; }
++.folio-dl-detail {
++  display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px;
++  background: var(--folio-surface); max-height: 46%; overflow-y: auto; flex: none;
++}
++.folio-dl-name { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
++.folio-dl-url { font-size: 11px; color: var(--folio-muted); overflow-wrap: anywhere; }
++.folio-dl-meta { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 12px; }
++.folio-dl-meta span:nth-child(odd) { color: var(--folio-muted); }
++.folio-dl-meta span:nth-child(even) { overflow-wrap: anywhere; }
++.folio-speed { width: 100%; height: auto; display: block; }
++.folio-speed-grid { stroke: var(--folio-grid); stroke-width: 1; }
++.folio-speed-line { fill: none; stroke: var(--folio-accent); stroke-width: 2; stroke-linejoin: round; }
++.folio-speed-area { fill: var(--folio-accent-soft); }
++.folio-dl-speed { display: flex; align-items: baseline; justify-content: space-between; }
++.folio-dl-speed-now { font-size: 15px; font-weight: 600; }
++.folio-dl-size { font-size: 12px; color: var(--folio-muted); }
++.folio-dl-actions { display: flex; gap: 6px; }
++.folio-dl-btn {
++  appearance: none; border: none; border-radius: 9px; padding: 6px 10px;
++  background: var(--folio-surface); color: inherit; font: inherit; font-size: 12px; cursor: pointer;
++}
++.folio-dl-btn:hover { background: var(--folio-accent-soft); }
++
++/* ---- Folio Essentials: tiles with the site's own icon and color (folio-sidebar.js) ---- */
++.folio-ess-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--folio-grid); }
++.folio-ess-tile {
++  position: relative; height: 56px; border-radius: 12px; cursor: pointer;
++  display: flex; align-items: center; justify-content: center;
++  background: color-mix(in srgb, var(--folio-ess-color, currentColor) 16%, var(--folio-surface));
++}
++.folio-ess-tile:hover { filter: brightness(1.08); }
++.folio-ess-icon { width: 24px; height: 24px; }
++.folio-ess-letter { font-size: 18px; font-weight: 600; color: var(--folio-ess-color, currentColor); }
++.folio-ess-remove {
++  position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; min-width: 18px; padding: 0;
++  border: none; border-radius: 6px; background: var(--folio-surface); cursor: pointer; opacity: 0;
++  -moz-context-properties: fill;
++  background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216px%22 height=%2216px%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22black%22 d=%22M4 4h1.03125c.253906.011719.511719.128906.6875.3125L8 6.59375l2.3125-2.28125c.265625-.230469.445312-.304688.6875-.3125h1v1c0 .285156-.035156.550781-.25.75L9.46875 8.03125l2.25 2.25c.1875.1875.28125.453125.28125.71875v1h-1c-.265625 0-.53125-.09375-.71875-.28125L8 9.4375l-2.28125 2.28125C5.53125 11.90625 5.265625 12 5 12H4v-1c0-.265625.09375-.53125.28125-.71875l2.28125-2.25L4.28125 5.75C4.070312 5.554688 3.976562 5.28125 4 5zm0 0%22/%3E%3C/svg%3E"); background-size: 10px; background-position: center; background-repeat: no-repeat;
++}
++.folio-ess-tile:hover .folio-ess-remove { opacity: 1; }
++/* ---- Folio empty state: no real tabs open (folio-sidebar.js). The window stays open. ---- */
++#folio-empty { display: none; }
++:root[folio-empty] #tabbrowser-tabbox { position: relative; }
++:root[folio-empty] #folio-empty {
++  display: flex; position: absolute; inset: 0; z-index: 10;
++  flex-direction: column; align-items: center; justify-content: center; gap: 10px;
++  background: var(--folio-empty-bg, Canvas); color: CanvasText; text-align: center;
++}
++.folio-empty-title { font-size: 18px; font-weight: 600; }
++.folio-empty-sub { font-size: 13px; color: var(--folio-muted); }
++
++/* A closed tab row shrinks and fades in place, so you can see which one closed. */
++.folio-side-tab { transition: height 0.18s ease, opacity 0.18s ease, margin 0.18s ease; }
++.folio-side-tab.folio-closing { height: 0 !important; opacity: 0; margin-block: 0 !important; overflow: hidden; pointer-events: none; }
++
++/* Essentials past 6: three columns and smaller tiles, so 12 still fit the sidebar (folio-sidebar.js). */
++.folio-ess-grid.folio-ess-compact { grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
++.folio-ess-compact .folio-ess-tile { height: 42px; border-radius: 10px; }
++.folio-ess-compact .folio-ess-icon { width: 18px; height: 18px; }
++.folio-ess-compact .folio-ess-letter { font-size: 14px; }
++.folio-note {
++  font-size: 12px; color: var(--folio-muted); text-align: center;
++  padding: 6px 8px; margin-bottom: 6px; border-radius: 8px; background: var(--folio-surface);
++}
++
++/* ---- Spaces and folders (folio-sidebar.js). Colors are the --folio-* tokens; motion is the Zen-like part. ---- */
++#folio-spaces { justify-content: center; align-items: center; gap: 6px; padding: 4px 0 6px; }
++.folio-space {
++  appearance: none; width: 22px; height: 22px; min-width: 22px; margin: 0; padding: 0;
++  border: none; border-radius: 50%; background: transparent; color: inherit;
++  display: flex; align-items: center; justify-content: center; cursor: pointer;
++  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background-color 0.2s ease;
++}
++.folio-space:hover { background: var(--folio-surface); }
++.folio-space-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--folio-space-color, var(--folio-accent)); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
++.folio-space.active { transform: scale(1.18); box-shadow: 0 0 0 2px var(--folio-space-color, var(--folio-accent)); }
++.folio-space.active .folio-space-dot { transform: scale(1.1); }
++.folio-space-add { font-size: 15px; line-height: 1; color: var(--folio-muted); }
++.folio-space-name { font-size: 12px; color: var(--folio-muted); margin-inline-start: 6px; }
++.folio-space-input { font: inherit; font-size: 12px; width: 90px; background: var(--folio-surface); color: inherit; border: none; border-radius: 6px; padding: 2px 6px; }
++
++/* Switching spaces: the list eases in from the side. */
++@keyframes folioSwitch { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
++#folio-sidebar-tabs.folio-switching { animation: folioSwitch 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
++
++/* New rows slide in. */
++@keyframes folioEnter { from { opacity: 0; transform: translateX(-12px) scale(0.97); } to { opacity: 1; transform: none; } }
++.folio-side-tab.folio-enter { animation: folioEnter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
++
++/* Folders: a rounded header; the body opens and closes by animating its rows' height. */
++.folio-folder { margin: 2px 0; }
++.folio-folder-head {
++  align-items: center; gap: 6px; height: 34px; padding: 0 8px 0 10px; border-radius: 10px; cursor: pointer;
++  background: var(--folio-surface); transition: background-color 0.2s ease, box-shadow 0.2s ease;
++}
++.folio-folder-head:hover { background: color-mix(in srgb, currentColor 14%, transparent); }
++.folio-folder-name { font-size: 13px; font-weight: 600; }
++.folio-folder-count { font-size: 11px; color: var(--folio-muted); }
++.folio-folder-chevron { width: 8px; height: 8px; margin-inline-start: 2px; border-inline-end: 2px solid currentColor; border-bottom: 2px solid currentColor; opacity: 0.6; transform: rotate(45deg); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
++.folio-folder.collapsed .folio-folder-chevron { transform: rotate(-45deg) translateY(-2px); }
++.folio-folder-inner { min-height: 0; overflow: hidden; padding-inline-start: 8px; border-inline-start: 2px solid var(--folio-accent-soft); margin: 2px 0 4px 12px; }
++
++/* Drag and drop. */
++.folio-dragging { opacity: 0.7; transform: scale(0.98); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28); }
++.folio-drop { box-shadow: inset 0 0 0 2px var(--folio-accent); background: var(--folio-accent-soft); }
++
++/* Right-click menus (folio-sidebar.js). */
++.folio-menu {
++  position: fixed; z-index: 100; min-width: 180px; padding: 6px;
++  border-radius: 12px; background: var(--folio-panel-bg, #1c1c22); color: var(--folio-text, #f1f1f4);
++  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); display: flex; flex-direction: column; gap: 2px;
++  animation: folioMenuIn 0.18s cubic-bezier(0.2, 0.8, 0.2, 1) both;
++}
++@keyframes folioMenuIn { from { opacity: 0; transform: scale(0.94) translateY(-4px); } to { opacity: 1; transform: none; } }
++.folio-menu-closing { pointer-events: none; } /* fading out (FolioSidebar.closeMenu) */
++.folio-menu-item {
++  appearance: none; border: none; background: transparent; color: inherit; font: inherit; font-size: 13px;
++  text-align: start; padding: 7px 10px; border-radius: 8px; cursor: pointer;
++}
++.folio-menu-item:hover { background: var(--folio-accent-soft); }
++
++/* ---- Spaces, v2 (studied from Zen's spaces, not copied): slide by direction, color wash, pill switcher ---- */
++/* Easing: an ease-out curve with no bounce (Zen's switch is a spring with bounce 0, 250 ms). */
++@property --folio-tint { syntax: "<color>"; inherits: true; initial-value: transparent; }
++#folio-sidebar {
++  --folio-tint: transparent;
++  background-image: linear-gradient(180deg, var(--folio-tint), transparent 42%);
++  transition: --folio-tint 0.3s ease;
++}
++@keyframes folioSwitch {
++  from { opacity: 0; transform: translateX(calc(var(--folio-slide-dir, 1) * 46px)); }
++  to { opacity: 1; transform: none; }
++}
++#folio-sidebar-tabs.folio-switching { animation: folioSwitch 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
++
++/* Inactive spaces are grayed and faded, like Zen's workspace icons; active or hovered ones come to full color. */
++.folio-space {
++  width: 26px; height: 26px; min-width: 26px; padding: 0; overflow: hidden;
++  filter: grayscale(1); opacity: 0.62; transform: none; box-shadow: none;
++  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, opacity 0.2s ease, background-color 0.25s ease;
++}
++.folio-space:hover { filter: grayscale(0); opacity: 1; }
++.folio-space.active {
++  width: auto; min-width: 26px; padding: 0 12px 0 5px; filter: none; opacity: 1; transform: none;
++  background: color-mix(in srgb, var(--folio-space-color, var(--folio-accent)) 20%, transparent);
++  box-shadow: none; justify-content: flex-start; gap: 6px;
++}
++.folio-space-dot { flex: none; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
++.folio-space.active .folio-space-dot { transform: scale(1.05); }
++.folio-space-label {
++  font-size: 12px; font-weight: 600; white-space: nowrap; max-width: 0; opacity: 0;
++  transition: max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
++}
++.folio-space.active .folio-space-label { max-width: 140px; opacity: 1; }
++.folio-space-add { color: var(--folio-muted); filter: none; opacity: 0.75; }
++.folio-space-add:hover { opacity: 1; }
++#folio-spaces { justify-content: center; align-items: center; gap: 8px; padding: 6px 4px 8px; }
++
++/* ---- v3, after studying Zen's sidebar (screenshots + measured motion), not copied ---- */
++/* Folders: real Adwaita folder icons (closed / open), the open folder's tabs indented, no side line. */
++.folio-folder-icon { width: 18px; height: 18px; min-width: 18px; background-color: currentColor; mask-size: contain; mask-repeat: no-repeat; mask-position: center; }
++.folio-folder-icon-closed { mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216px%22 height=%2216px%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22black%22 d=%22M2.96875 1.003906c-1.644531 0-3 1.355469-3 3v8c0 1.644532 1.355469 3 3 3h10c1.644531 0 3-1.355468 3-3v-6c0-1.644531-1.355469-3-3-3H9.382812L7.675781 1.296875c-.1875-.1875-.441406-.292969-.707031-.292969zm0 2h3.585938l1 1H1.96875c0-.5625.4375-1 1-1m-1 2h11c.5625 0 1 .4375 1 1v6c0 .5625-.4375 1-1 1h-10c-.5625 0-1-.4375-1-1zm0 0%22/%3E%3C/svg%3E"); }
++.folio-folder-icon-open { mask-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216px%22 height=%2216px%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22black%22 d=%22M3 1C1.355469 1 0 2.355469 0 4v8c0 1.644531 1.355469 3 3 3h8.882812c.832032 0 1.578126-.402344 2.054688-.9375.472656-.53125.738281-1.167969.910156-1.800781l.972656-2.609375C16.210938 8.203125 15.726562 7 15 6.484375c-.484375-.34375-.714844-.292969-1-.324219V5c0-.855469-.558594-1.589844-1.09375-1.828125-.417969-.1875-.808594-.183594-.953125-.171875H8.414062L6.707031 1.292969C6.519531 1.105469 6.265625 1 6 1zm0 2h2.585938l1.707031 1.707031C7.480469 4.894531 7.734375 5 8 5h4v1H7h.039062c-.914062-.039062-1.746093.394531-2.1875.96875C4.136719 8.195312 3.691406 9.25 3.050781 10.6875c-.171875.527344.113281 1.09375.636719 1.265625.527344.167969 1.09375-.117187 1.261719-.640625.488281-1.011719.921875-1.816406 1.339843-2.808594C6.5 8 6.992188 8.011719 7.1875 8H13c1 0 1.046875.703125.886719 1.128906l-.96875 2.609375c-.121094.4375-.300781.800781-.476563.996094-.175781.199219-.285156.265625-.558594.265625H3c-.570312 0-1-.429688-1-1V4c0-.570312.46875-.792969 1-1m9.105469 1.996094h.003906V5h.003906l-.003906.003906h-.003906V5h-.015625l-.003906-.003906zm0 0%22/%3E%3C/svg%3E"); display: none; }
++.folio-folder:not(.collapsed) > .folio-folder-head .folio-folder-icon-open { display: block; }
++.folio-folder:not(.collapsed) > .folio-folder-head .folio-folder-icon-closed { display: none; }
++.folio-folder-count, .folio-folder-chevron { display: none; }
++.folio-folder { margin: 0; }
++.folio-folder-head { height: 32px; padding: 0 8px; gap: 8px; background: transparent; border-radius: 8px; }
++.folio-folder-head:hover { background: var(--folio-surface); }
++.folio-folder-name { font-size: 13px; font-weight: 600; }
++.folio-folder-body { overflow: hidden; }
++.folio-folder-input { flex: 1; min-width: 0; font: inherit; font-size: 13px; font-weight: 600; color: inherit; background: var(--folio-surface); border: 1px solid var(--folio-accent-soft); border-radius: 6px; padding: 2px 6px; }
++.folio-folder-inner { border-inline-start: none; margin: 0; padding-inline-start: 14px; }
++
++/* Spaces bar: quiet, like Zen's switcher. Colored circles with the initial; "+" on the right. */
++#folio-spaces { justify-content: flex-start; align-items: center; gap: 6px; padding: 6px 8px 8px; }
++.folio-space { width: 24px; height: 24px; min-width: 24px; padding: 0; border-radius: 50%; border: none; background: transparent; filter: grayscale(1); opacity: 0.55; box-shadow: none; overflow: visible; transition: filter 0.2s ease, opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease; }
++.folio-space:hover { filter: grayscale(0); opacity: 1; }
++.folio-space.active { width: 24px; padding: 0; background: transparent; filter: none; opacity: 1; box-shadow: 0 0 0 2px var(--folio-space-color); transform: none; }
++.folio-space-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--folio-space-color); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
++.folio-space-label { display: none; }
++.folio-space-add { margin-inline-start: auto; width: 24px; font-size: 16px; color: var(--folio-muted); background: transparent; opacity: 0.8; filter: none; }
++.folio-space-add:hover { background: var(--folio-surface); }
++
++/* ---- Folio sidebar, dark palette (until the theme editor). Tokens: change these to re-theme. ---- */
++:root {
++  --folio-sidebar-bg: #17171b;
++  --folio-text: #ececf1;
++  --folio-muted: rgba(236, 236, 241, 0.56);
++  --folio-surface: rgb(var(--folio-ink, 255 255 255) / 0.06);
++  --folio-grid: rgb(var(--folio-ink, 255 255 255) / 0.09);
++  --folio-accent: #9d8cff;
++  --folio-accent-soft: rgba(157, 140, 255, 0.22);
++  --folio-empty-bg: #17171b;
++}
++#folio-sidebar { background-color: var(--folio-sidebar-bg); color: var(--folio-text); }
++
++/* ---- Spaces bar, Create a Space, icon picker: matched to Zen (values read from Zen's CSS) ---- */
++.folio-icon-svg { -moz-context-properties: fill, fill-opacity; fill: currentColor; fill-opacity: 1; }
++
++/* Bottom bar: [balance] [spaces, centered] [+] */
++#folio-spaces { display: flex; align-items: center; gap: 0; padding: 4px 6px 6px; justify-content: space-between; }
++.folio-spaces-balance { width: 26px; flex: none; }
++.folio-spaces-list { display: flex; flex: 1; justify-content: center; align-items: center; gap: 2px; }
++#folio-spaces .folio-space {
++  appearance: none; width: 26px; height: 26px; min-width: 26px; margin: 0; padding: 0;
++  border: none; border-radius: 6px; background: transparent; box-shadow: none; transform: none;
++  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--folio-text);
++  filter: grayscale(1); opacity: 0.7; transition: filter 0.2s, opacity 0.2s, background-color 0.15s;
++}
++#folio-spaces .folio-space.active, #folio-spaces .folio-space:hover { filter: grayscale(0); opacity: 1; }
++#folio-spaces .folio-space:hover { background: var(--folio-surface); }
++.folio-space-icon.folio-icon-none { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--folio-text) 40%, transparent); }
++#folio-spaces .folio-space.active .folio-icon-none { background: var(--folio-text); }
++.folio-space-icon.folio-icon-svg { width: 16px; height: 16px; }
++.folio-space-icon.folio-icon-emoji { font-size: 14px; line-height: 1; }
++.folio-space-add {
++  appearance: none; width: 26px; height: 26px; min-width: 26px; padding: 0; margin: 0; border: none; border-radius: 6px;
++  background: transparent; color: var(--folio-muted); font-size: 18px; line-height: 1; cursor: pointer;
++}
++.folio-space-add:hover { background: var(--folio-surface); color: var(--folio-text); }
++#folio-spaces .folio-space-input { width: 100px; }
++
++/* Create a Space: fills the sidebar. */
++.folio-create { display: flex; flex-direction: column; height: 100%; min-height: 0; padding: 18px 4px 4px; box-sizing: border-box; color: var(--folio-text); }
++.folio-create-head { text-align: center; margin-top: 18px; }
++.folio-create-title { font-size: large; font-weight: 700; margin: 0 0 6px; }
++.folio-create-sub { margin: 0; font-size: 13px; opacity: 0.4; }
++.folio-create-form { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: rgb(var(--folio-ink, 255 255 255) / 0.25) transparent; }
++.folio-create-name-row { display: flex; align-items: center; gap: 8px; padding: 9px 8px; border-radius: 8px; background: rgb(var(--folio-ink, 255 255 255) / 0.05); }
++.folio-create-icon {
++  appearance: none; position: relative; width: 28px; height: 22px; min-width: 28px; padding: 0; margin: 0;
++  border: 1px dashed color-mix(in srgb, var(--folio-text) 50%, transparent); border-radius: 6px;
++  background: transparent; color: var(--folio-text); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.8;
++}
++.folio-create-icon[has-icon] { border-style: solid; border-color: transparent; opacity: 1; }
++.folio-create-icon-inner.folio-icon-svg { width: 16px; height: 16px; }
++.folio-create-icon-inner.folio-icon-emoji { font-size: 14px; }
++.folio-create-name { flex: 1; min-width: 0; border: none; outline: none; background: transparent; color: inherit; font: inherit; font-size: 14px; padding: 0; }
++.folio-create-theme {
++  appearance: none; border: none; border-radius: 8px; padding: 10px; background: rgb(var(--folio-ink, 255 255 255) / 0.05);
++  color: inherit; font: inherit; font-size: 14px; cursor: pointer;
++}
++.folio-create-theme:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.1); }
++.folio-create-swatches { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 4px 0; }
++.folio-create-swatches[hidden] { display: none; }
++.folio-swatch { appearance: none; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid transparent; background: var(--sw); cursor: pointer; }
++.folio-swatch.selected { border-color: var(--folio-text); }
++.folio-create-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
++.folio-create-primary, .folio-create-secondary {
++  appearance: none; width: 100%; border: none; border-radius: 8px; padding: 9px; font: inherit; font-size: 14px; cursor: pointer;
++}
++.folio-create-primary { background: color-mix(in srgb, var(--folio-text) 72%, transparent); color: #111; }
++.folio-create-primary[disabled] { opacity: 0.55; cursor: default; }
++.folio-create-secondary { background: rgb(var(--folio-ink, 255 255 255) / 0.05); color: inherit; }
++.folio-create-secondary:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.1); }
++@keyframes folioRiseIn { from { opacity: 0; transform: translateY(20px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
++@keyframes folioRiseOut { from { opacity: 1; transform: none; filter: none; } to { opacity: 0; transform: translateY(20px); filter: blur(2px); } }
++.folio-rise-in { animation: folioRiseIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
++.folio-rise-out { animation: folioRiseOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
++
++/* Icon picker panel (Zen: 250px wide, no panel padding). */
++.folio-picker { --panel-width: 250px; --panel-padding: 0px; }
++.folio-picker-body { width: 250px; display: flex; flex-direction: column; color: var(--folio-text, inherit); }
++.folio-picker-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; }
++.folio-picker-balance { width: 22px; }
++.folio-picker-tabs { display: flex; gap: 4px; }
++.folio-picker-tab {
++  appearance: none; border: none; background: transparent; color: inherit; font: inherit; font-size: small;
++  font-weight: 600; padding: 2px 6px; border-radius: 4px; cursor: pointer;
++}
++.folio-picker-tab:hover, .folio-picker-tab.selected { background: rgb(var(--folio-ink, 255 255 255) / 0.1); }
++.folio-picker-none { appearance: none; width: 22px; height: 22px; padding: 2px; border: none; border-radius: 4px; background: transparent; color: inherit; cursor: pointer; }
++.folio-picker-none:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.1); }
++.folio-picker-none img { width: 18px; height: 18px; }
++.folio-picker-pages { display: flex; overflow: hidden; max-height: 260px; }
++.folio-picker-page { min-width: 100%; display: flex; flex-direction: column; min-height: 0; }
++.folio-picker-search {
++  margin: 0 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.25);
++  background: rgba(0, 0, 0, 0.2); color: inherit; font: inherit; font-size: 13px;
++}
++.folio-picker-search:focus { outline: 2px solid var(--folio-accent); outline-offset: -1px; }
++.folio-picker-grid {
++  display: grid; grid-template-columns: repeat(auto-fill, minmax(28px, 1fr)); gap: 5px;
++  padding: 5px 10px 10px; overflow-y: auto; overflow-x: hidden; min-height: 0; flex: 1;
++}
++.folio-picker-emoji, .folio-picker-svg {
++  appearance: none; width: 28px; height: 28px; padding: 0; border: none; border-radius: 4px; background: transparent;
++  color: inherit; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
++  transition: opacity 0.08s ease-in-out;
++}
++.folio-picker-emoji[hidden] { display: none; }
++.folio-picker-emoji:hover, .folio-picker-svg:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.1); }
++.folio-picker-svg img { width: 20px; height: 20px; }
++/* Destructive menu items (Delete space) are red. */
++.folio-menu-item.folio-menu-danger { color: #ff6b6b; }
++.folio-menu-item.folio-menu-danger:hover { background: rgba(255, 107, 107, 0.16); }
++
++/* ---- Per-space accent: --folio-accent is set from the active space (folio-sidebar.js applyAccent). ---- */
++/* Registered as a color so it can animate when you switch spaces. The soft accent follows it. */
++@property --folio-accent { syntax: "<color>"; inherits: true; initial-value: #9d8cff; }
++:root {
++  --folio-accent-soft: color-mix(in srgb, var(--folio-accent) 22%, transparent);
++  transition: --folio-accent 0.35s ease;
++}
++.folio-swatch-row { display: flex; gap: 8px; padding: 6px; }
++.folio-color-pop { min-width: 0; }
++
++/* ---- Folio wallpaper theme: one wallpaper behind the whole window. The sidebar is a blurred, tinted
++   glass layer over the same wallpaper (its left part), and the page card sits on the right. ---- */
++:root[folio-wallpaper] #browser {
++  background-image: var(--folio-wallpaper);
++  background-size: cover;
++  background-position: center;
++  background-attachment: fixed;
++}
++:root[folio-wallpaper] #folio-sidebar {
++  background: var(--folio-sidebar-scrim, color-mix(in srgb, var(--folio-sidebar-bg) 14%, transparent));
++  -moz-backdrop-filter: blur(28px) saturate(1.2);
++  backdrop-filter: blur(28px) saturate(1.2);
++}
++
++
++/* ---- Accent on folders and spaces: both follow --folio-accent (the wallpaper's, or the space's own). ---- */
++.folio-folder-icon { background-color: var(--folio-accent); }
++.folio-folder-name { color: color-mix(in srgb, var(--folio-accent) 55%, var(--folio-text)); }
++.folio-folder-head:hover { background: var(--folio-accent-soft); }
++#folio-spaces .folio-space { color: color-mix(in srgb, var(--folio-accent) 70%, var(--folio-text)); }
++#folio-spaces .folio-space:hover { background: var(--folio-accent-soft); }
++#folio-spaces .folio-space.active { color: var(--folio-accent); background: var(--folio-accent-soft); box-shadow: inset 0 0 0 1.5px var(--folio-accent); }
++#folio-spaces .folio-space-icon.folio-icon-none, #folio-spaces .folio-space.active .folio-icon-none { background: var(--folio-accent); }
++.folio-space-dot { background: var(--folio-accent); }
++
++/* The Folio F in a tab row (the new tab page's icon): the accent color through the F's shape; the white image is moved out of view. */
++.folio-side-tab-icon[folio-mark] {
++  object-fit: none; object-position: 40px 0; background-color: var(--folio-accent);
++  -webkit-mask: url("chrome://branding/content/folio-mark.svg") center / contain no-repeat; mask: url("chrome://branding/content/folio-mark.svg") center / contain no-repeat;
++}
++
++/* ---- Folio: See-through window. The window is transparent; the OS blurs what is behind it.
++   Layer 1: one tint over the whole window (sidebar, toolbar, gaps) at --folio-st-sidebar.
++   Layer 2: the page card, at --folio-st-card, so its TOTAL opacity is the "page opacity" setting. ---- */
++:root[folio-seethrough] {
++  --folio-st-base: #0b0b10;
++  --folio-st-tint: color-mix(in srgb, var(--folio-accent) var(--folio-st-accentmix, 20%), var(--folio-st-base));
++  --folio-frame: transparent;
++  --folio-empty-bg: transparent;
++  background-color: color-mix(in srgb, var(--folio-st-tint) calc(var(--folio-st-sidebar, 0.35) * 100%), transparent) !important;
++}
++:root[folio-seethrough] :is(body, #main-window, #browser, #appcontent, #navigator-toolbox, #nav-bar, #sidebar-main, #sidebar-box,
++    #folio-sidebar, #tabbrowser-tabs, #titlebar, #TabsToolbar) {
++  background: transparent !important;
++  background-image: none !important;
++  -moz-backdrop-filter: none;
++  backdrop-filter: none;
++}
++:root[folio-seethrough] #tabbrowser-tabbox {
++  background-color: color-mix(in srgb, var(--folio-st-tint) calc(var(--folio-st-card, 0.6) * 100%), transparent) !important;
++}
++:root[folio-seethrough] #tabbrowser-tabpanels { background: transparent !important; }
++
++/* ---- Folio: hibernated tabs and the hover card (memory / CPU) ---- */
++.folio-side-tab[hibernated] { opacity: 0.55; }
++.folio-side-tab[hibernated] .folio-side-tab-icon { filter: grayscale(1); }
++.folio-side-tab[hibernated] .folio-side-tab-title { font-style: italic; }
++.folio-side-tab[hibernated]:hover { opacity: 0.85; }
++#folio-tab-tip {
++  position: fixed; z-index: 2147483000; min-width: 190px; max-width: 280px; padding: 10px 12px; box-sizing: border-box;
++  border-radius: 12px; color: var(--folio-text, #ececf1); font: 12.5px/1.35 system-ui, sans-serif;
++  background: color-mix(in srgb, var(--folio-sidebar-bg, #17171b) 88%, black);
++  border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
++  -moz-backdrop-filter: blur(18px); backdrop-filter: blur(18px); pointer-events: none;
++}
++#folio-tab-tip[hidden] { display: none; }
++#folio-tab-tip .tt-name { font-weight: 600; font-size: 13px; margin-bottom: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++#folio-tab-tip .tt-sub { color: var(--folio-muted, rgba(236, 236, 241, 0.56)); margin-top: 3px; }
++#folio-tab-tip .tt-row { display: flex; justify-content: space-between; gap: 18px; margin-top: 6px; }
++#folio-tab-tip .tt-row b { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--folio-accent, #9d8cff); }
++
++
++/* ---- Spaces: each has its own look (wallpaper copy / new / see-through) and an entrance (folio-sidebar.js) ---- */
++.folio-look { display: flex; flex-direction: column; gap: 8px; }
++.folio-look-label { font-size: 12px; font-weight: 600; opacity: 0.55; margin-top: 4px; }
++.folio-look-preview {
++  height: 64px; border-radius: 10px; background-size: cover; background-position: center; background-color: rgb(var(--folio-ink, 255 255 255) / 0.05);
++  display: flex; align-items: center; justify-content: center; font-size: 12px; opacity: 1;
++}
++.folio-look-preview[empty] { opacity: 0.55; }
++.folio-look-actions { display: flex; gap: 6px; }
++.folio-look-btn {
++  appearance: none; border: none; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px; cursor: pointer;
++  background: rgb(var(--folio-ink, 255 255 255) / 0.07); color: inherit; flex: 0 0 auto;
++}
++.folio-look-btn:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.13); }
++.folio-look-btn.primary { background: var(--folio-accent-soft, rgba(157, 140, 255, 0.24)); color: color-mix(in srgb, var(--folio-accent, #9d8cff) 70%, var(--folio-text, #fff)); flex: 1; }
++.folio-look-btn[hidden] { display: none; }
++.folio-look-strip { display: flex; gap: 8px; overflow-x: auto; padding: 2px 1px 6px; }
++.folio-look-card {
++  appearance: none; border: 2px solid transparent; border-radius: 10px; padding: 3px; background: transparent; color: inherit; font: inherit;
++  display: flex; flex-direction: column; align-items: center; gap: 4px; width: 74px; flex: 0 0 74px; cursor: pointer;
++}
++.folio-look-card:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.08); }
++.folio-look-card[selected] { border-color: var(--folio-accent, #9d8cff); }
++.folio-look-card[nowall] { opacity: 0.45; cursor: default; }
++.folio-look-thumb {
++  width: 100%; height: 46px; border-radius: 7px; background-size: cover; background-position: center;
++  background-color: rgb(var(--folio-ink, 255 255 255) / 0.07);
++}
++.folio-look-name { font-size: 11px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
++.folio-look-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 4px 2px; font-size: 14px; }
++.folio-look-switch {
++  appearance: none; border: none; width: 38px; height: 22px; border-radius: 11px; padding: 0; position: relative; cursor: pointer;
++  background: rgb(var(--folio-ink, 255 255 255) / 0.18); transition: background 0.18s ease;
++}
++.folio-look-switch[aria-checked="true"] { background: var(--folio-accent, #9d8cff); }
++.folio-look-knob { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
++.folio-look-switch[aria-checked="true"] .folio-look-knob { transform: translateX(16px); }
++
++/* Entering a space: the old wallpaper (veil) sits between the new wallpaper and the UI while it dissolves. */
++:root[folio-entering] #browser { isolation: isolate; }
++#folio-space-veil {
++  position: fixed; inset: 0; z-index: -1; pointer-events: none;
++  background-size: cover; background-position: center; will-change: opacity, transform;
++}
++#folio-space-badge {
++  position: fixed; left: 50%; top: 46%; transform: translate(-50%, -50%); z-index: 2147483000; pointer-events: none;
++  display: flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 18px;
++  font-size: 18px; font-weight: 600; color: var(--folio-text, #f2f0f6);
++  background: color-mix(in srgb, var(--folio-sidebar-bg, #1b1a22) 62%, transparent);
++  border: 1px solid color-mix(in srgb, var(--folio-accent, #9d8cff) 45%, transparent);
++  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
++  -moz-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
++}
++#folio-space-badge .folio-badge-icon.folio-icon-svg { width: 22px; height: 22px; }
++#folio-space-badge .folio-icon-emoji { font-size: 22px; }
++
++/* Key popup (folio-keys.js FolioKeyPop): the keys you just pressed, as chips, same glass card as the space switch. */
++#folio-key-pop {
++  position: fixed; left: 50%; top: 46%; transform: translate(-50%, -50%); z-index: 2147483000; pointer-events: none;
++  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 20px 11px; border-radius: 18px;
++  color: var(--folio-text, #f2f0f6);
++  background: color-mix(in srgb, var(--folio-sidebar-bg, #1b1a22) 62%, transparent);
++  border: 1px solid color-mix(in srgb, var(--folio-accent, #9d8cff) 45%, transparent);
++  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
++  -moz-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
++}
++.folio-key-pop-keys { display: flex; gap: 6px; }
++.folio-key-chip {
++  min-width: 34px; padding: 6px 12px; border-radius: 10px; text-align: center;
++  font-size: 17px; font-weight: 700; line-height: 22px; color: var(--folio-text, #f2f0f6);
++  background: color-mix(in srgb, var(--folio-accent, #9d8cff) 26%, transparent);
++  border: 1px solid color-mix(in srgb, var(--folio-accent, #9d8cff) 55%, transparent);
++  box-shadow: inset 0 -3px 0 color-mix(in srgb, var(--folio-accent, #9d8cff) 30%, rgba(0, 0, 0, 0.35));
++}
++.folio-key-pop-name { font-size: 12.5px; font-weight: 600; opacity: .75; }
++
++
++/* ---- Notice at the top right (folio-actions.js FolioToast): "Copied current URL!" ---- */
++#folio-notice {
++  position: fixed; top: 14px; right: 14px; z-index: 2147483000;
++  display: flex; align-items: center; gap: 10px; max-width: 420px; padding: 10px 14px; border-radius: 14px;
++  font-size: 13.5px; font-weight: 600; color: var(--folio-text, #f2f0f6);
++  background: color-mix(in srgb, var(--folio-sidebar-bg, #1b1a22) 80%, black);
++  border: 1px solid color-mix(in srgb, var(--folio-accent, #9d8cff) 40%, transparent);
++  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
++  -moz-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
++}
++.folio-notice-icon {
++  flex: 0 0 18px; width: 18px; height: 18px; border-radius: 50%; background: var(--folio-accent, #9d8cff); position: relative;
++}
++.folio-notice-icon svg { position: absolute; inset: 0; margin: auto; color: #111; }
++.folio-notice-icon[css-check]::after {
++  content: ""; position: absolute; left: 6px; top: 3px; width: 4px; height: 8px; border: solid #111; border-width: 0 2px 2px 0; transform: rotate(45deg);
++}
++.folio-notice-key { padding: 1px 7px; border-radius: 6px; background: rgb(var(--folio-ink, 255 255 255) / 0.13); font-weight: 600; }
++.folio-notice-btn {
++  appearance: none; border: none; border-radius: 8px; padding: 4px 11px; font: inherit; font-size: 13px; cursor: pointer;
++  background: var(--folio-accent-soft, rgba(157, 140, 255, 0.24)); color: color-mix(in srgb, var(--folio-accent, #9d8cff) 70%, var(--folio-text, #fff));
++}
++.folio-notice-btn:hover { background: color-mix(in srgb, var(--folio-accent, #9d8cff) 38%, transparent); }
++
++/* Pinned tabs: a small pin before the title, a touch of the accent. */
++.folio-side-tab[pinned] .folio-side-tab-title { color: color-mix(in srgb, var(--folio-accent, #9d8cff) 55%, var(--folio-text, currentColor)); }
++.folio-side-tab[pinned]::before {
++  content: ""; width: 9px; height: 9px; margin: 0 0 0 4px; flex: 0 0 9px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
++  background: var(--folio-accent, #9d8cff); opacity: 0.85;
++}
++
++/* Animated icons (folio-icons.mjs): they replace the old mask icons where present. */
++.folio-pulso { display: block; flex: none; pointer-events: none; overflow: visible; }
++.folio-side-button[folio-pulso] .toolbarbutton-icon,
++.folio-side-tab-close[folio-pulso] .toolbarbutton-icon { display: none; }
++.folio-side-tab-close[folio-pulso] { display: flex; align-items: center; justify-content: center; }
++.folio-space-add .folio-pulso { margin: auto; }
++
++/* Folio: no zoom badge ("100%", Reset zoom level) on Folio's new tab. folio-sidebar.js sets folio-on-newtab. */
++:root[folio-on-newtab] #urlbar-zoom-button { display: none !important; }
++
++/* Folio: "This site" section in the Trust panel (folio-sidebar.js FolioSite). */
++#folio-site-section { display: flex; flex-direction: column; gap: 6px; padding: 10px 16px 12px; border-top: 1px solid var(--panel-separator-color, rgba(128,128,128,.25)); }
++.folio-site-head { font-weight: 600; margin-bottom: 2px; }
++.folio-site-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; }
++.folio-site-label { flex: 1; }
++.folio-site-seg { display: flex; gap: 2px; padding: 2px; border-radius: 9px; background: color-mix(in srgb, currentColor 8%, transparent); }
++.folio-site-opt { appearance: none; border: 0; margin: 0; padding: 4px 10px; min-width: 34px; border-radius: 7px; background: transparent; color: inherit; font: inherit; font-size: .92em; cursor: pointer;
++  transition: background-color 160ms ease, color 160ms ease; }
++.folio-site-opt:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
++.folio-site-opt[aria-pressed="true"] { background: var(--folio-accent, AccentColor); color: var(--folio-accent-text, AccentColorText); }
++.folio-site-opt:focus-visible { outline: 2px solid var(--folio-accent, AccentColor); outline-offset: 1px; }
++.folio-site-pct { min-width: 56px; font-variant-numeric: tabular-nums; }
++
++
++/* ---- Folio: menus and panels wear the sidebar's palette (night shift 2026-11-24) ----
++   Every popup (right-click menus, the app menu, site info, downloads, extensions, the address bar results) used
++   the system's gray. Now they use Folio's tokens, so they also follow the wallpaper palette FolioTheme sets on the root.
++   Slightly lighter than the sidebar = raised above it. Rounded corners only show where the OS allows transparent
++   popups (Wayland, compositing X11); elsewhere Firefox forces square ones. */
++:root:not([lwtheme]) :is(menupopup, panel):not(#autoscroller) {
++  --panel-background-color: color-mix(in srgb, var(--folio-sidebar-bg) 92%, white);
++  --panel-text-color: var(--folio-text);
++  --panel-border-color: rgb(var(--folio-ink, 255 255 255) / 0.09);
++  --panel-separator-color: rgb(var(--folio-ink, 255 255 255) / 0.08);
++  --panel-border-radius: 12px;
++  --text-color-deemphasized: var(--folio-muted);
++  color-scheme: var(--folio-scheme, dark);
++}
++:root:not([lwtheme]) menupopup:not(#autoscroller) {
++  --panel-border-radius: 10px;
++}
++:root:not([lwtheme]) menupopup :is(menu, menuitem) {
++  border-radius: 6px;
++}
++:root:not([lwtheme]) menupopup :is(menu, menuitem)[_moz-menuactive]:not([disabled]) {
++  background-color: color-mix(in srgb, var(--folio-accent) 24%, transparent);
++  color: var(--folio-text);
++}
++:root:not([lwtheme]) panel :is(.subviewbutton, .toolbarbutton-1):not([disabled]):is(:hover, :focus-visible) {
++  background-color: color-mix(in srgb, var(--folio-accent) 18%, transparent);
++}
++:root:not([lwtheme]) panel :is(.subviewbutton, .toolbarbutton-1):not([disabled]):hover:active {
++  background-color: color-mix(in srgb, var(--folio-accent) 28%, transparent);
++}
++
++/* ---- Folio: private windows (night shift 2026-11-24) ----
++   With the address bar in the sidebar, Firefox's mask badge wrapped onto the address bar's row and squeezed it.
++   It is hidden there; instead the whole sidebar takes a violet tint, so a private window is obvious at a glance. */
++@media -moz-pref("folio.toolbar.sidebar") {
++  :root[privatebrowsingmode="temporary"] .private-browsing-indicator-button { display: none !important; }
++}
++:root[privatebrowsingmode="temporary"]:not([folio-wallpaper]) {
++  --folio-sidebar-bg: #1b1424;
++  --folio-accent: #b58cff;
++  --folio-accent-soft: rgba(181, 140, 255, 0.22);
++}
++:root[privatebrowsingmode="temporary"]:not([folio-wallpaper]) #folio-sidebar {
++  background-image: linear-gradient(180deg, rgba(128, 0, 215, 0.16), rgba(128, 0, 215, 0.04) 60%, transparent);
++}
++
++/* ---- Folio: address bar results float over the page (night shift 2026-11-24, Zen's "floating" URL bar) ----
++   In the sidebar layout the results were squeezed into the sidebar's 250 px (titles cut, URLs on a second line).
++   While results show, the address bar lifts out of the sidebar into a wide card centered over the page; Esc, a click
++   elsewhere or opening a result puts it back. The sidebar keeps the empty slot so nothing below it moves. */
++:root[folio-sidebar-toolbar]:not([folio-sidebar-toolbar-bottom]) #nav-bar #urlbar-container { min-height: 32px; }
++/* 2026-11-25 (Sammy: the bar "leaves its place, messed up"): the address bar never moves. In Firefox 160 the results
++   list (.urlbarView) is a popover anchored under the bar's input and stretched to its width, which in the sidebar
++   cut titles. Now only the results list widens: it drops from the bar's left edge and extends over the page. */
++:root[folio-sidebar-toolbar]:not([folio-sidebar-toolbar-bottom]) .urlbarView:popover-open {
++  position-area: block-end span-inline-end !important;
++  justify-self: start !important;
++  inset-inline: auto !important;
++  width: min(640px, calc(100vw - 24px)) !important;
++  border-radius: 14px;
++  background: color-mix(in srgb, var(--folio-sidebar-bg, #17171b) 92%, white) !important;
++  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / 0.08) !important;
++  animation: folio-results-in 150ms cubic-bezier(0.2, 0, 0, 1);
++}
++@media -moz-pref("folio.sidebar.right") {
++  :root[folio-sidebar-toolbar]:not([folio-sidebar-toolbar-bottom]) .urlbarView:popover-open {
++    position-area: block-end span-inline-start !important; justify-self: end !important;
++  }
++}
++@keyframes folio-results-in { from { opacity: 0; transform: translateY(-4px); } }
++@media (prefers-reduced-motion: reduce) { .urlbarView:popover-open { animation: none !important; } }
++/* Selected result: Folio's accent as a soft fill with light text (the default was dark purple text on a
++   bright fill, hard to read). */
++:root:not([lwtheme]) .urlbarView {
++  --urlbarview-background-color-selected: color-mix(in srgb, var(--folio-accent) 30%, transparent) !important;
++  --urlbarview-text-color-selected: var(--folio-text) !important;
++}
++
++/* ---- Folio: find in page = a compact floating card at the page's top right (night shift 2026-11-24) ----
++   Firefox's find bar was a full-width gray strip glued to the bottom of the page card. Now it floats over the
++   page like Chrome's / Arc's, in Folio's colors; the page keeps its full height. */
++:root:not([lwtheme]) .browserContainer > findbar {
++  position: absolute;
++  grid-area: auto; /* not the "findbar" grid row: then top/right are measured from the page card */
++  top: 10px;
++  inset-inline-end: 14px;
++  z-index: 5;
++  width: max-content;
++  max-width: calc(100% - 28px);
++
++  padding: 4px 6px 4px 8px;
++  border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.1);
++  border-radius: 12px;
++  background: color-mix(in srgb, var(--folio-sidebar-bg) 92%, white);
++  color: var(--folio-text);
++  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
++  color-scheme: var(--folio-scheme, dark);
++  animation: folio-find-in 150ms cubic-bezier(0.22, 1, 0.36, 1);
++}
++:root:not([lwtheme]) .browserContainer > findbar[hidden] { display: none; }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-textbox {
++  border-radius: 8px;
++  border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.12);
++  background: rgb(var(--folio-ink, 255 255 255) / 0.06);
++  color: var(--folio-text);
++}
++:root:not([lwtheme]) .browserContainer > findbar .findbar-textbox:focus {
++  outline: 2px solid var(--folio-accent);
++  outline-offset: -1px;
++}
++:root:not([lwtheme]) .browserContainer > findbar .findbar-textbox[status="notfound"] {
++  background: rgba(226, 87, 76, 0.18);
++}
++:root:not([lwtheme]) .browserContainer > findbar checkbox { color: var(--folio-muted); }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-closebutton { border-radius: 8px; }
++@keyframes folio-find-in { from { opacity: 0; transform: translateY(-6px); } }
++/* xul.css forces flex:1 1 0% !important on [flex="1"]; a min-width of its content keeps the card from collapsing. */
++:root:not([lwtheme]) .browserContainer > findbar > .findbar-container { min-width: max-content; overflow: visible; }
++:root:not([lwtheme]) .browserContainer > findbar { contain: none; }
++:root:not([lwtheme]) .browserContainer > findbar { border-top-width: 1px; margin-bottom: 0 !important; }
++/* Options as small toggle chips (their tooltips say what they do). Match Diacritics is left out: rarely used and
++   it doubled the card's width. */
++:root:not([lwtheme]) .browserContainer > findbar .findbar-textbox { width: 220px; }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-match-diacritics { display: none; }
++:root:not([lwtheme]) .browserContainer > findbar checkbox {
++  margin: 0 2px; padding: 0 9px; min-height: 26px; border-radius: 7px;
++  border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.1);
++  color: var(--folio-muted);
++}
++:root:not([lwtheme]) .browserContainer > findbar checkbox:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.07); color: var(--folio-text); }
++:root:not([lwtheme]) .browserContainer > findbar checkbox[checked] {
++  background: color-mix(in srgb, var(--folio-accent) 26%, transparent);
++  border-color: color-mix(in srgb, var(--folio-accent) 55%, transparent);
++  color: var(--folio-text);
++}
++:root:not([lwtheme]) .browserContainer > findbar checkbox > .checkbox-check { display: none; }
++:root:not([lwtheme]) .browserContainer > findbar checkbox .checkbox-label { display: none; }
++:root:not([lwtheme]) .browserContainer > findbar checkbox > .checkbox-label-box::after {
++  font-size: 12.5px; font-weight: 600; line-height: 1;
++}
++:root:not([lwtheme]) .browserContainer > findbar .findbar-highlight > .checkbox-label-box::after { content: "All"; }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-case-sensitive > .checkbox-label-box::after { content: "Aa"; }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-entire-word > .checkbox-label-box::after { content: "ab"; text-decoration: underline; text-underline-offset: 3px; }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-find-status { color: var(--folio-muted); margin-inline: 8px 4px; }
++
++/* ---- Folio: loading spinner in the tab row (night shift 2026-11-24) ----
++   Firefox's tab throbber lives in the hidden tab strip, so a loading page gave no sign in Folio's list.
++   Connecting = a muted ring, loading (bytes arriving) = the accent ring. */
++.folio-side-tab-spinner { display: none; }
++.folio-side-tab[busy] > .folio-side-tab-icon { display: none; }
++.folio-side-tab[busy] > .folio-side-tab-spinner {
++  display: flex; flex: none; box-sizing: border-box;
++  width: 14px; height: 14px; margin: 1px;
++  border-radius: 50%;
++  border: 2px solid color-mix(in srgb, var(--folio-text) 16%, transparent);
++  border-top-color: var(--folio-muted);
++  animation: folio-tab-spin 0.9s linear infinite;
++}
++.folio-side-tab[busy][progress] > .folio-side-tab-spinner {
++  border-color: color-mix(in srgb, var(--folio-accent) 22%, transparent);
++  border-top-color: var(--folio-accent);
++  animation-duration: 0.7s;
++}
++@keyframes folio-tab-spin { to { transform: rotate(360deg); } }
++@media (prefers-reduced-motion: reduce) {
++  .folio-side-tab[busy] > .folio-side-tab-spinner { animation-duration: 2.4s; }
++}
++.folio-side-tab-icon[default-favicon] { -moz-context-properties: fill; fill: var(--folio-muted); }
++
++/* ---- Folio: download progress ring on the sidebar's Downloads button (folio-sidebar.js watchDownloads) ---- */
++#folio-side-downloads { position: relative; }
++#folio-side-downloads[folio-dl-active]::before {
++  content: ""; position: absolute; inset: 1px; border-radius: 50%; pointer-events: none;
++  background: conic-gradient(var(--folio-accent) var(--folio-dl-progress, 0%), color-mix(in srgb, var(--folio-accent) 18%, transparent) 0);
++  mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
++  transition: --folio-dl-progress 0.3s;
++}
++#folio-side-downloads[folio-dl-unknown]::before { animation: folio-tab-spin 1s linear infinite; }
++#folio-side-downloads[folio-dl-active] { color: var(--folio-accent); }
++.folio-menu-sep { height: 1px; margin: 4px 8px; background: rgb(var(--folio-ink, 255 255 255) / 0.08); }
++/* Empty state: the placeholder's page (a remote browser) painted over the "No tabs open" overlay despite its
++   z-index, so the overlay was never seen. While Folio is empty the placeholder page is simply not drawn, and
++   Back/Forward hide (they would navigate the hidden placeholder back to the closed page). */
++:root[folio-empty] #tabbrowser-tabpanels > .deck-selected { visibility: hidden; }
++:root[folio-empty] :is(#back-button, #forward-button) { display: none !important; }
++#folio-empty { border-radius: inherit; }
++.folio-empty-mark {
++  width: 56px; height: 56px; margin-bottom: 6px; opacity: 0.5;
++  background: var(--folio-accent);
++  mask: url("chrome://browser/skin/sidebar/firefox.svg") center / contain no-repeat;
++}
++
++/* ---- Folio: the system accent (GTK blue on most desktops) is replaced by Folio's in the browser UI: primary
++   buttons (Allow, Save, Install…), checked boxes, focus rings. Follows the wallpaper palette like the rest. ---- */
++:root:not([lwtheme]), :root:not([lwtheme]) :is(panel, menupopup) {
++  --color-accent-primary: var(--folio-accent);
++  --color-accent-primary-hover: color-mix(in srgb, white 12%, var(--folio-accent));
++  --color-accent-primary-active: color-mix(in srgb, black 12%, var(--folio-accent));
++  --button-text-color-primary: #15121f;
++  --focus-outline-color: var(--folio-accent);
++}
++
++/* ---- Folio: peek (folio-sidebar.js FolioPeek) — the hidden sidebar floats in from the left edge ---- */
++#folio-edge { display: none; }
++:root[folio-sidebar-hidden]:not([inFullscreen]) #folio-edge {
++  display: block; position: fixed; left: 0; top: 0; bottom: 0; width: 6px; z-index: 30;
++}
++:root[folio-sidebar-hidden][folio-peek] #folio-sidebar {
++  display: flex !important;
++  position: fixed !important;
++  left: 8px; top: var(--folio-peek-top, 8px); bottom: 8px; /* Helium kZenModeVTSPadding = 8 */
++  width: var(--folio-peek-w, 260px) !important;
++  z-index: 31;
++  opacity: 1; /* not !important: an !important value beats the slide's animated opacity */
++  border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.08) !important;
++  border-radius: 12px;
++  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.3);
++}
++/* Helium's 8 px hover leeway (kZenModeChromeHoverLeeway): an invisible ring around the floating sidebar still counts as
++   "on it", so brushing just past its border doesn't start the close. */
++:root[folio-sidebar-hidden][folio-peek] #folio-sidebar::after {
++  content: ""; position: absolute; inset: -8px; z-index: -1; pointer-events: auto;
++}
++/* It floats over the PAGE, and backdrop-filter does not blur page content, so the docked sidebar's 14% glass (wallpaper)
++   or see-through tint left its text sitting on WhatsApp etc. The floating one is fully OPAQUE (even 4% let page text
++   show through, measured): the sidebar color as an image layer over a solid base, so a translucent
++   --folio-sidebar-bg (see-through mode) still can't leak. The slide in/out is in folio-sidebar.js FolioPeek.show. */
++:root[folio-sidebar-hidden][folio-peek] #folio-sidebar#folio-sidebar {
++  background: linear-gradient(180deg, var(--folio-tint), transparent 42%),
++    linear-gradient(var(--folio-sidebar-bg, #17171b), var(--folio-sidebar-bg, #17171b)),
++    #141418 !important;
++}
++/* Drag to reorder (folio-sidebar.js attachDrag): an accent line where the tab will land. */
++.folio-side-tab.folio-drop-before { box-shadow: inset 0 2px 0 var(--folio-accent); }
++.folio-side-tab.folio-drop-after { box-shadow: inset 0 -2px 0 var(--folio-accent); }
++/* Keyboard focus on a tab row (arrow keys in the list): an accent ring, only for keyboard focus. */
++.folio-side-tab:focus-visible { outline: 2px solid var(--folio-accent); outline-offset: -2px; }
++.folio-side-tab:focus:not(:focus-visible) { outline: none; }
++.folio-menu-item:focus-visible { background: var(--folio-accent-soft); outline: none; }
++
++/* ---- Folio: the browser frame is always dark (night shift 2026-11-24) ----
++   Folio's sidebar and frame are drawn dark whatever the OS says, but with the default theme on a LIGHT desktop
++   Firefox resolved the toolbar's own colors as light: near-black icons and address text on Folio's dark sidebar
++   (nearly invisible). The frame now resolves its colors as dark; web pages still follow the OS setting. */
++:root:not([lwtheme]) :is(#navigator-toolbox, #folio-sidebar, #folio-empty, #tabbrowser-tabbox > findbar) {
++  color-scheme: var(--folio-scheme, dark);
++}
++/* The toolbar's text (and so its icons, fill: currentColor) comes from GTK's light system colors there, which
++   color-scheme does not flip: on a light desktop only, give the frame Folio's own text color. */
++@media (prefers-color-scheme: light) {
++  :root:not([lwtheme]) :is(#navigator-toolbox, #folio-sidebar) {
++    color: var(--folio-text) !important;
++    --toolbar-field-color: var(--folio-text);
++    --toolbar-field-focus-color: var(--folio-text);
++  }
++}
++/* History rows with the site's icon on the left (title over host to its right). */
++.folio-view-row.folio-view-row-iconed {
++  display: grid !important; grid-template-columns: 16px minmax(0, 1fr); column-gap: 10px; align-items: center;
++}
++.folio-view-row-iconed > .folio-view-row-icon {
++  grid-row: 1 / span 2; width: 16px; height: 16px;
++  -moz-context-properties: fill; fill: var(--folio-muted);
++}
++.folio-view-row-iconed > :not(.folio-view-row-icon) { grid-column: 2; min-width: 0; }
++
++/* ---- Folio: sound indicator in the tab row (folio-sidebar.js makeRow/updateRow) ---- */
++#folio-sidebar .folio-side-tab > .folio-side-tab-audio {
++  display: none; appearance: none; flex: none;
++  width: 22px; height: 22px; min-width: 22px; padding: 3px; margin: 0 2px 0 0;
++  border: none; border-radius: 6px; background: transparent center / 14px no-repeat;
++  -moz-context-properties: fill; fill: var(--folio-muted); color: var(--folio-muted); cursor: pointer;
++}
++#folio-sidebar .folio-side-tab > .folio-side-tab-audio:hover { background-color: var(--folio-surface); fill: var(--folio-text); }
++#folio-sidebar .folio-side-tab:is([soundplaying], [muted], [activemedia-blocked]) > .folio-side-tab-audio { display: flex; }
++#folio-sidebar .folio-side-tab[soundplaying] > .folio-side-tab-audio { background-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg"); fill: var(--folio-accent); }
++#folio-sidebar .folio-side-tab[muted] > .folio-side-tab-audio { background-image: url("chrome://browser/skin/tabbrowser/tab-audio-muted-small.svg"); fill: var(--folio-muted); }
++#folio-sidebar .folio-side-tab[activemedia-blocked] > .folio-side-tab-audio { background-image: url("chrome://browser/skin/tabbrowser/tab-audio-blocked-small.svg"); }
++.folio-side-tab-audio > .toolbarbutton-icon, .folio-side-tab-audio > .toolbarbutton-text { display: none; }
++/* Unread count on an Essential (from its open tab's title). */
++.folio-ess-badge {
++  position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box;
++  border-radius: 8px; background: var(--folio-accent); color: #15121f;
++  font-size: 10.5px; font-weight: 700; line-height: 16px; text-align: center; pointer-events: none;
++  box-shadow: 0 0 0 2px var(--folio-sidebar-bg);
++}
++.folio-ess-tile:hover .folio-ess-badge { opacity: 0; }
++/* Window buttons in the sidebar layout (floating desktops only): their own slim row on top, so the button row and the
++   full-width address bar below keep their layout. Side follows the desktop's button layout (GTK decoration-layout). */
++:root:not([folio-tiling])[folio-sidebar-toolbar] #nav-bar { flex-wrap: wrap !important; }
++:root:not([folio-tiling])[folio-sidebar-toolbar] #nav-bar > .titlebar-buttonbox-container {
++  order: -1; flex: 0 0 100% !important; height: auto !important; min-height: 0 !important;
++  align-items: center; padding: 0 0 4px;
++}
++:root:not([folio-tiling])[folio-sidebar-toolbar] #nav-bar > .titlebar-buttonbox-container > .titlebar-buttonbox {
++  height: 28px; align-items: center;
++}
++:root:not([folio-tiling])[folio-sidebar-toolbar] #nav-bar > #nav-bar-customization-target { flex: 1 1 100% !important; }
++/* Firefox shows window buttons only in the "first visible toolbar" and thinks its (Folio-hidden) tab strip is that one,
++   so in the Horizontal and Compact layouts they never appeared. On floating desktops: always in the nav bar. */
++:root:not([folio-tiling]) #nav-bar > .titlebar-buttonbox-container { display: flex !important; }
++:root:not([folio-tiling]) #TabsToolbar > .titlebar-buttonbox-container { display: none !important; }
++
++/* ---- Folio: menu bar (Alt) leftovers (night shift 2026-11-24) ----
++   New Container Tab (containers are an internal detail of "Separate logins" spaces), Email Link (dated; Email Image is
++   gone from the page menu too), Sync promos shown to signed-out people, Firefox View (off in Folio) and Report Broken
++   Site (sends to Mozilla; Firefox re-shows it after Folio's buildHelpMenu hides it). */
++#menu_newUserContext,
++#menu_sendLink,
++#bookmarksRemoteTabsPromo,
++#historyRemoteTabsPromo,
++#menu_openFirefoxView,
++#help_reportBrokenSite,
++#appMenu_help_reportBrokenSite { display: none !important; }
++
++/* ---- Folio: fullscreen (night shift 2026-11-24) ----
++   Firefox hides its own sidebar and toolbars in fullscreen, but Folio's sidebar is its own element: a fullscreen video
++   (DOM fullscreen) stayed framed by the sidebar and the card's margins and rounded corners. Video fullscreen = page only.
++   F11 fullscreen with the toolbars slid away = sidebar hidden too (it comes back with the toolbars at the top edge). */
++:root[inDOMFullscreen] :is(#folio-sidebar, #folio-edge, #folio-empty),
++:root[fullscreenNavToolboxHidden] :is(#folio-sidebar, #folio-edge) { display: none !important; }
++:root:is([inDOMFullscreen], [fullscreenNavToolboxHidden]) #tabbrowser-tabbox {
++  margin: 0 !important; border-radius: 0 !important; box-shadow: none !important; outline: none !important;
++}
++
++/* ---- Folio: icons-only sidebar (folio.sidebar.icons; Brave's collapsed vertical tabs) ----
++   56 px: favicons only, centered; the title is in the hover card. Close with middle-click or the tab menu. */
++:root[folio-sidebar-icons] #folio-sidebar { padding: 8px 6px 10px !important; }
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab {
++  justify-content: center; padding-inline: 0 !important; gap: 0 !important; min-height: 36px;
++}
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab > :is(.folio-side-tab-title, .folio-side-tab-close, .folio-side-tab-audio) {
++  display: none !important;
++}
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab[soundplaying]::after {
++  /* playing sound: a small accent dot on the icon (no room for the speaker button) */
++  content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; margin: -14px 0 0 16px; background: var(--folio-accent);
++}
++:root[folio-sidebar-icons] .folio-ess-grid { grid-template-columns: 1fr !important; gap: 5px; }
++:root[folio-sidebar-icons] .folio-ess-tile { height: 40px; }
++:root[folio-sidebar-icons] .folio-ess-tile .folio-ess-remove { display: none; }
++:root[folio-sidebar-icons] #folio-spaces { flex-direction: column !important; gap: 4px !important; padding: 4px 0 6px !important; }
++:root[folio-sidebar-icons] #folio-spaces .folio-spaces-balance { display: none !important; }
++:root[folio-sidebar-icons] #folio-spaces .folio-spaces-list { flex-direction: column; gap: 4px; }
++:root[folio-sidebar-icons] #folio-spaces .folio-space-add { margin: 0 !important; }
++:root[folio-sidebar-icons] #folio-sidebar-bottom { flex-direction: column !important; align-items: center; gap: 4px; }
++:root[folio-sidebar-icons] .folio-folder-head { justify-content: center; padding: 0 !important; }
++:root[folio-sidebar-icons] .folio-folder-head > :not(:first-child) { display: none !important; }
++:root[folio-sidebar-icons] #folio-sidebar-view { display: none !important; }
++
++/* ---- Folio: LIGHT mode (2026-11-24, Sammy: "I switched to light and our sidebar was still dark") ----
++   Folio follows the Appearance choice in Settings (website appearance Light / Dark / System; System = the desktop).
++   folio-sidebar.js FolioScheme sets [folio-light] on the window. A wallpaper theme keeps its own palette (its inline
++   colors win). Hard-coded white tints in Folio's CSS go through --folio-ink (white on dark, black on light). */
++:root { --folio-ink: 255 255 255; --folio-scheme: dark; }
++:root[folio-light] {
++  --folio-ink: 0 0 0;
++  --folio-scheme: light;
++  --folio-frame: #e6e5ec;
++  --folio-sidebar-bg: #efeef4;
++  --folio-panel-bg: #ffffff;
++  --folio-text: #1c1a23;
++  --folio-muted: rgba(28, 26, 35, 0.58);
++  --folio-surface: rgba(0, 0, 0, 0.055);
++  --folio-grid: rgba(0, 0, 0, 0.09);
++  --folio-accent-soft: color-mix(in srgb, var(--folio-accent) 20%, transparent);
++  --folio-empty-bg: #f7f6fa;
++}
++/* The frame's text and icons (fill: currentColor) follow Folio's palette in both modes, whatever the desktop's
++   GTK colors say. */
++:root:not([lwtheme]) :is(#navigator-toolbox, #folio-sidebar) {
++  color: var(--folio-text) !important;
++  --toolbar-field-color: var(--folio-text);
++  --toolbar-field-focus-color: var(--folio-text);
++}
++:root[folio-light]:not([lwtheme]) #urlbar-background { background-color: rgba(0, 0, 0, 0.055) !important; }
++:root[folio-light]:not([lwtheme]) #urlbar[open] > #urlbar-background,
++:root[folio-light]:not([lwtheme]) #urlbar[focused] > #urlbar-background { background-color: #ffffff !important; }
++:root[folio-light] #tabbrowser-tabbox { box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12); }
++:root[folio-light] :is(menupopup, panel):not(#autoscroller) { --panel-background-color: #ffffff; }
++:root[folio-light] .folio-ess-badge { color: #ffffff; }
++:root[folio-light] { --button-text-color-primary: #ffffff; }
++:root[folio-light] #folio-sidebar .folio-side-tab[selected] { background: rgba(0, 0, 0, 0.07); }
++/* Private window: a light violet sidebar instead of the dark one. */
++:root[folio-light][privatebrowsingmode="temporary"]:not([folio-wallpaper]) { --folio-sidebar-bg: #f1ebfb; }
++:root[folio-light][privatebrowsingmode="temporary"]:not([folio-wallpaper]) #folio-sidebar {
++  background-image: linear-gradient(180deg, rgba(128, 0, 215, 0.12), rgba(128, 0, 215, 0.03) 60%, transparent);
++}
++:root[folio-light] .folio-ess-tile { background: color-mix(in srgb, var(--folio-ess-color, #8a86a0) 14%, #ffffff); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
++
++/* Zoom (2026-11-24): never in the address bar; a pill over the page shows the size when the user zooms (FolioZoomPopup). */
++#urlbar-zoom-button { display: none !important; }
++#folio-zoom-pop {
++  position: fixed; z-index: 200; display: flex; align-items: center; gap: 10px;
++  padding: 6px 6px 6px 14px; border-radius: 999px;
++  background: var(--folio-panel-bg, #1c1c22); color: var(--folio-text, #f1f1f4);
++  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.3); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
++  opacity: 0; pointer-events: none; transform: translate(-50%, -6px) scale(0.96);
++  transition: opacity 0.16s ease, transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
++}
++#folio-zoom-pop[open] { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
++#folio-zoom-pop .folio-zoom-value { min-width: 3.2em; text-align: center; }
++#folio-zoom-pop .folio-zoom-reset {
++  border: 0; border-radius: 999px; padding: 4px 12px; font: inherit; font-weight: 600; color: inherit; cursor: default;
++  background: color-mix(in srgb, currentColor 10%, transparent);
++}
++#folio-zoom-pop .folio-zoom-reset:hover { background: var(--folio-accent-soft, color-mix(in srgb, currentColor 16%, transparent)); }
++#folio-zoom-pop .folio-zoom-reset[hidden] { display: none; }
++#folio-zoom-pop:not(:has(.folio-zoom-reset:not([hidden]))) { padding-right: 14px; }
++@media (prefers-reduced-motion: reduce) { #folio-zoom-pop { transition: opacity 0.1s linear; } }
++
++/* ---- Folio Glance (folio-glance.js, 2026-11-25): Alt+click a link -> floating preview card over the page ---- */
++#folio-glance { position: fixed; z-index: 150; }
++#folio-glance .folio-glance-shade {
++  position: absolute; inset: 0; border-radius: 12px;
++  background: rgba(8, 8, 12, 0.45);
++}
++#folio-glance .folio-glance-card {
++  position: absolute; left: 7%; right: 4%; top: 4%; bottom: 4%;
++  display: flex; border-radius: 14px; overflow: hidden;
++  background: var(--folio-panel-bg, #1c1c22);
++  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / 0.08);
++  transform-origin: var(--glance-ox, 50%) var(--glance-oy, 50%);
++}
++#folio-glance .folio-glance-browser { flex: 1; min-width: 0; border: 0; }
++#folio-glance .folio-glance-rail {
++  position: absolute; left: calc(7% - 52px); top: 4%;
++  display: flex; flex-direction: column; gap: 10px;
++}
++#folio-glance .folio-glance-btn {
++  width: 38px; height: 38px; border-radius: 999px; border: 0; padding: 0;
++  display: grid; place-items: center; cursor: default;
++  background: var(--folio-panel-bg, #1c1c22); color: var(--folio-text, #f1f1f4);
++  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / 0.08);
++  font: 600 16px/1 system-ui, sans-serif;
++  transition: transform 0.15s ease, background-color 0.15s ease;
++}
++#folio-glance .folio-glance-btn:hover { background: var(--folio-accent-soft, #2b2a36); transform: scale(1.06); }
++#folio-glance .folio-glance-btn:focus-visible { outline: 2px solid var(--folio-accent); outline-offset: 2px; }
++#folio-glance .folio-glance-btn.close::before { content: "\2715"; }
++#folio-glance .folio-glance-btn.expand::before { content: "\2922"; font-size: 18px; }
++
++/* ---- Folio space routing card (folio-routing.js, 2026-11-25; Zen's "Edit route") ---- */
++#folio-route-card {
++  position: fixed; z-index: 210; left: 50%; top: 22%; transform: translateX(-50%);
++  width: min(420px, 90vw); padding: 18px; border-radius: 16px; display: flex; flex-direction: column; gap: 10px;
++  background: var(--folio-panel-bg, #1c1c22); color: var(--folio-text, #f1f1f4);
++  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / 0.08);
++  animation: folioMenuIn 0.2s cubic-bezier(0.2, 0, 0, 1) both;
++}
++#folio-route-card .folio-route-title { font-size: 15px; font-weight: 650; }
++#folio-route-card .folio-route-label { font-size: 12px; opacity: 0.65; margin-top: 2px; }
++#folio-route-card .folio-route-seg { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: rgb(var(--folio-ink, 255 255 255) / 0.06); }
++#folio-route-card .folio-route-seg button {
++  flex: 1; border: 0; border-radius: 8px; padding: 7px 0; font: inherit; font-size: 13px; color: inherit; background: none;
++}
++#folio-route-card .folio-route-seg button[aria-checked="true"] { background: var(--folio-accent); color: #15121f; font-weight: 600; }
++#folio-route-card .folio-route-input, #folio-route-card .folio-route-select {
++  font: inherit; font-size: 14px; color: inherit; padding: 9px 12px; border-radius: 10px;
++  border: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.12); background: rgb(var(--folio-ink, 255 255 255) / 0.05);
++}
++#folio-route-card .folio-route-input[aria-invalid="true"] { border-color: #ff6b6b; }
++#folio-route-card .folio-route-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
++#folio-route-card .folio-route-actions button { font: inherit; font-size: 13px; padding: 8px 16px; border-radius: 10px; border: 0; color: inherit; background: rgb(var(--folio-ink, 255 255 255) / 0.08); }
++#folio-route-card .folio-route-actions .folio-route-save { background: var(--folio-accent); color: #15121f; font-weight: 600; }
++
++/* ---- Search mode = a colored pill (2026-11-25, Zen's "Reddit" pill after Tab): when the address bar is searching one
++   site/engine (bang or keyword + Tab), its chip becomes a pill in the current space's accent color. ---- */
++#urlbar[searchmode] .searchmode-switcher,
++#urlbar[searchmode] #urlbar-search-mode-indicator {
++  background: var(--folio-accent) !important;
++  color: #15121f !important;
++  border-radius: 999px !important;
++  padding-inline: 6px 10px !important;
++  font-weight: 650;
++  animation: folioPillIn 0.18s cubic-bezier(0.2, 0, 0, 1) both;
++}
++#urlbar[searchmode] .searchmode-switcher :is(.searchmode-switcher-title, .searchmode-switcher-dropmarker, .searchmode-switcher-close),
++#urlbar[searchmode] #urlbar-search-mode-indicator-title { color: inherit !important; fill: currentColor !important; }
++#urlbar[searchmode] .searchmode-switcher :is(.searchmode-switcher-content, .searchmode-switcher-chicklet) { background: transparent !important; color: inherit !important; }
++@keyframes folioPillIn { from { transform: scale(0.8); opacity: 0; } to { transform: none; opacity: 1; } }
++@media (prefers-reduced-motion: reduce) { #urlbar[searchmode] :is(.searchmode-switcher, #urlbar-search-mode-indicator) { animation: none; } }
++/* the chip is a <moz-button>: its background lives in its shadow DOM, reachable through ::part(button) */
++#urlbar[searchmode] .searchmode-switcher::part(button) {
++  background: var(--folio-pill-bg, var(--folio-accent)) !important; color: var(--folio-pill-fg, #15121f) !important;
++  border-radius: 999px !important; transition: background-color 0.2s ease, color 0.2s ease;
++}
++#urlbar[searchmode] .searchmode-switcher { background: transparent !important; padding-inline: 0 !important; }
++
++/* ---- Sidebar on the right (pref folio.sidebar.right, 2026-11-25; Zen's layout in Sammy's reference video) ---- */
++@media -moz-pref("folio.sidebar.right") {
++  /* Firefox numbers every child of #browser (order 1..8) with a more specific rule: !important to win. */
++  #folio-sidebar { order: 99 !important; border-inline-end: none !important; border-inline-start: 1px solid color-mix(in srgb, currentColor 10%, transparent); }
++  #folio-sidebar-resizer { right: auto !important; left: -4px !important; }
++  #tabbrowser-tabbox { margin-inline: 8px 2px !important; }
++  :root[folio-sidebar-toolbar] #tabbrowser-tabbox { margin-inline: 8px 2px !important; }
++  #folio-edge { left: auto !important; right: 0 !important; }
++  :root[folio-sidebar-hidden][folio-peek] #folio-sidebar { left: auto !important; right: 8px !important; }
++}
++
++/* Bang pill in the address bar (folio-sidebar.js folioBangPill, 2026-11-25): "!yt" + space -> colored site pill. */
++.folio-bang-pill {
++  display: inline-flex; align-items: center; gap: 5px; flex: none; align-self: center;
++  margin-inline-end: 6px; padding: 2px 10px 2px 6px; border-radius: 999px;
++  background: var(--folio-pill-bg, var(--folio-accent)); color: var(--folio-pill-fg, #15121f);
++  font-size: 0.92em; font-weight: 650; white-space: nowrap;
++  transition: background-color 0.2s ease, color 0.2s ease;
++  animation: folioPillIn 0.18s cubic-bezier(0.2, 0, 0, 1) both;
++}
++.folio-bang-pill img { width: 14px; height: 14px; border-radius: 3px; }
++
++/* Zen button in the address bar (folio-zen.js): a small lotus; an accent dot when this site has hidden elements. */
++#folio-zen-button { position: relative; }
++#folio-zen-button > .urlbar-icon {
++  /* Drawn as a mask filled with the text color, so it matches the star in every theme (the context-fill version came out black). */
++  list-style-image: none; width: 16px; height: 16px; background-color: currentColor; opacity: 0.85;
++  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='black'%3E%3Cpath d='M8 1.4c1.6 1.6 2.4 3.4 2.4 5.3S9.6 10.4 8 12C6.4 10.4 5.6 8.6 5.6 6.7S6.4 3 8 1.4z'/%3E%3Cpath d='M1.2 6.4c2.3-.2 4.1.6 5.3 2.2.5.7.9 1.9 1.2 3.3-1.4-.2-2.7-.6-3.7-1.3C2.6 9.6 1.7 8.2 1.2 6.4z'/%3E%3Cpath d='M14.8 6.4c-.5 1.8-1.4 3.2-2.8 4.2-1 .7-2.3 1.1-3.7 1.3.3-1.4.7-2.6 1.2-3.3 1.2-1.6 3-2.4 5.3-2.2z'/%3E%3Crect x='3' y='13.4' width='10' height='1.2' rx='.6'/%3E%3C/g%3E%3C/svg%3E") center / 16px no-repeat;
++}
++#folio-zen-button:hover > .urlbar-icon { opacity: 1; }
++#folio-zen-button[zenned]::after {
++  content: ""; position: absolute; top: 4px; inset-inline-end: 3px; width: 6px; height: 6px; border-radius: 999px;
++  background: var(--folio-accent); box-shadow: 0 0 0 2px var(--toolbar-field-background-color, #1c1c22);
++}
++
++/* Shift + swipe accent line (folio-zen.js watchSwipeGestures): grows from the page's middle toward the swipe. */
++#folio-swipe-line {
++  position: fixed; z-index: 160; height: 3px; border-radius: 999px; pointer-events: none;
++  background: linear-gradient(90deg, transparent, var(--folio-accent) 30%, var(--folio-accent));
++  box-shadow: 0 0 12px var(--folio-accent), 0 0 2px var(--folio-accent);
++  transform: scaleX(0); transition: transform 0.05s linear;
++}
++
++/* ---- Folio Share card (folio-share.js) + split-view rows ---- */
++#folio-share-card {
++  position: fixed; z-index: 210; left: 50%; top: 18%; transform: translateX(-50%);
++  width: min(360px, 90vw); padding: 18px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;
++  background: var(--folio-panel-bg, #1c1c22); color: var(--folio-text, #f1f1f4);
++  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5), 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / 0.08);
++  animation: folioMenuIn 0.2s cubic-bezier(0.2, 0, 0, 1) both;
++}
++#folio-share-card .folio-share-head { align-self: stretch; display: flex; flex-direction: column; gap: 4px; }
++#folio-share-card .folio-share-url { font-size: 12px; opacity: 0.65; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
++#folio-share-card .folio-share-qr { width: 176px; height: 176px; border-radius: 12px; background: #fff; padding: 8px; image-rendering: pixelated; }
++#folio-share-card .folio-share-actions { align-self: stretch; display: flex; flex-direction: column; gap: 6px; }
++#folio-share-card .folio-share-actions button {
++  font: inherit; font-size: 13px; padding: 9px 14px; border-radius: 10px; border: 0; color: inherit; text-align: start;
++  background: rgb(var(--folio-ink, 255 255 255) / 0.07);
++}
++#folio-share-card .folio-share-actions button:hover { background: var(--folio-accent-soft, rgb(var(--folio-ink, 255 255 255) / 0.12)); }
++#folio-share-card .folio-share-actions button:first-child { background: var(--folio-accent); color: #15121f; font-weight: 600; }
++/* Split view pair: the two rows join into one pill with an accent edge. */
++.folio-side-tab[split-first] { border-bottom-left-radius: 2px !important; border-bottom-right-radius: 2px !important; box-shadow: inset 3px 0 0 var(--folio-accent); }
++.folio-side-tab[split-second] { border-top-left-radius: 2px !important; border-top-right-radius: 2px !important; box-shadow: inset 3px 0 0 var(--folio-accent); margin-top: -1px; }
++
++/* Copy-link button (folio-zen.js addCopyButton), same look as the Zen lotus. */
++#folio-copy-button > .urlbar-icon {
++  list-style-image: none; width: 16px; height: 16px; background-color: currentColor; opacity: 0.85;
++  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 9.5l3-3'/%3E%3Cpath d='M7.2 4.6l1-1a2.6 2.6 0 013.7 3.7l-1 1'/%3E%3Cpath d='M8.8 11.4l-1 1a2.6 2.6 0 01-3.7-3.7l1-1'/%3E%3C/svg%3E") center / 16px no-repeat;
++}
++#folio-copy-button:hover > .urlbar-icon { opacity: 1; }
++#folio-swipe-line { height: 4px !important; }
++/* Drag the window by empty sidebar space (Zen). Everything you click or type in stays clickable. */
++#folio-sidebar, #folio-sidebar-tabs { -moz-window-dragging: drag; }
++#folio-sidebar :is(toolbarbutton, button, input, .folio-side-tab, .folio-essential, #urlbar, #urlbar *, .folio-space-dot, .folio-folder, menulist, [role="button"], a, image) {
++  -moz-window-dragging: no-drag;
++}
++
++/* Split layouts (folio.split.layout via FolioSidebar.watchSplitLayout). Columns is Firefox's own. */
++#tabbrowser-tabpanels[splitview][folio-split="rows"] { flex-direction: column !important; }
++#tabbrowser-tabpanels[splitview][folio-split="rows"] .split-view-splitter { width: auto !important; height: 4px !important; margin-inline: 0 !important; margin-block: 1px !important; }
++#tabbrowser-tabpanels[splitview][folio-split="grid"] { flex-wrap: wrap !important; align-content: stretch; gap: 6px; }
++#tabbrowser-tabpanels[splitview][folio-split="grid"] .split-view-splitter { display: none !important; }
++#tabbrowser-tabpanels[splitview][folio-split="grid"] > .split-view-panel { flex: 1 1 calc(50% - 6px) !important; min-width: calc(50% - 6px) !important; height: calc(50% - 3px) !important; }
++
++/* Current space name above the tabs (FolioSidebar.renderSpaces), Zen-style. */
++#folio-space-name {
++  display: flex; align-items: center; gap: 8px; margin: 6px 10px 2px; padding: 0 4px;
++  font-size: 12px; font-weight: 600; letter-spacing: .01em; color: var(--folio-text, currentColor); opacity: .72;
++}
++#folio-space-name[hidden] { display: none; }
++#folio-space-name .folio-space-name-icon { width: 14px; height: 14px; opacity: .9; }
++
++/* Folders (2026-11-26, Sammy: "they were better" + "a branching line that connects to the tabs when expanded"):
++   the original folder look, and an open folder's tabs hang off a tree: one vertical line from the folder down to
++   the last tab, and a short rounded branch into each tab. */
++.folio-folder-inner { position: relative; padding-inline-start: 22px !important; margin-inline-start: 0 !important; border: none !important; }
++.folio-folder-inner > .folio-side-tab { position: relative; overflow: visible !important; }
++.folio-folder-inner > .folio-side-tab::before {
++  content: ""; position: absolute; inset-inline-start: -12px; top: -4px; height: calc(50% + 4px); width: 10px;
++  border-inline-start: 1.5px solid rgb(var(--folio-ink, 255 255 255) / 0.18);
++  border-bottom: 1.5px solid rgb(var(--folio-ink, 255 255 255) / 0.18);
++  border-end-start-radius: 7px; pointer-events: none;
++}
++.folio-folder-inner > .folio-side-tab:not(:last-child)::after {
++  content: ""; position: absolute; inset-inline-start: -12px; top: 50%; bottom: -4px;
++  border-inline-start: 1.5px solid rgb(var(--folio-ink, 255 255 255) / 0.18); pointer-events: none;
++}
++.folio-folder-inner > .folio-side-tab[selected]::before { border-color: color-mix(in srgb, var(--folio-accent) 70%, transparent); }
++:root[folio-sidebar-icons] .folio-folder-inner > .folio-side-tab::before, :root[folio-sidebar-icons] .folio-folder-inner > .folio-side-tab::after { display: none; }
++
++/* Icons-only rail polish (2026-11-25, Sammy: "the workspaces and below were horrible"): clear sections with thin
++   dividers, tabs as small rounded squares like the Essentials, no space-name label (no room for it). */
++:root[folio-sidebar-icons] #folio-space-name { display: none !important; }
++:root[folio-sidebar-icons] #folio-spaces {
++  margin: 8px 6px 6px !important; padding: 8px 0 !important;
++  border-block: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.1);
++}
++:root[folio-sidebar-icons] #folio-spaces .folio-space { width: 28px; height: 28px; margin-inline: auto; }
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab {
++  width: 32px; height: 32px; min-height: 32px !important; margin: 1px auto !important; border-radius: 9px !important;
++  background: transparent;
++}
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.1); }
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab[selected] {
++  background: color-mix(in srgb, var(--folio-accent) 24%, transparent) !important; box-shadow: none !important;
++}
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab .folio-side-tab-icon { width: 16px; height: 16px; margin: 0 !important; }
++:root[folio-sidebar-icons] .folio-folder { width: 32px; margin: 1px auto; }
++:root[folio-sidebar-icons] .folio-folder-inner { margin-inline-start: 0 !important; padding-inline-start: 0 !important; border: none !important; }
++:root[folio-sidebar-icons] .folio-folder-head { width: 32px; height: 32px; border-radius: 9px; }
++:root[folio-sidebar-icons] #folio-sidebar-bottom { border-top: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.1); padding-top: 8px !important; margin-inline: 6px; }
++
++/* Split view, Zen-style (2026-11-25, Sammy: "the split view is weird"): no per-panel URL footer, even 6px gaps, rounded
++   panels, the active one outlined in the accent and the others slightly dimmed so you always see where you are. */
++#tabbrowser-tabpanels[splitview] split-view-footer { display: none !important; }
++#tabbrowser-tabpanels[splitview] .split-view-panel > .browserContainer {
++  border-radius: 10px !important; overflow: hidden; outline: none !important;
++  box-shadow: 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / 0.08) !important;
++  transition: box-shadow .18s ease, filter .18s ease;
++}
++#tabbrowser-tabpanels[splitview] .split-view-panel.deck-selected > .browserContainer {
++  box-shadow: 0 0 0 2px var(--folio-accent), 0 8px 24px rgba(0, 0, 0, .25) !important;
++}
++#tabbrowser-tabpanels[splitview] .split-view-panel:not(.deck-selected) > .browserContainer { filter: brightness(.88); }
++#tabbrowser-tabpanels[splitview] .split-view-splitter { width: 6px !important; margin-inline: 0 !important; }
++#tabbrowser-tabpanels[splitview][folio-split="rows"] .split-view-splitter { height: 6px !important; width: auto !important; margin: 0 !important; }
++/* (no align-items here: the Essentials grid sits in this list too and must keep its full width — Sammy, 2026-11-26) */
++:root[folio-sidebar-icons] #folio-sidebar .folio-side-tab, :root[folio-sidebar-icons] .folio-folder { align-self: center !important; margin-inline: auto !important; flex: none !important; }
++
++/* ==== Sidebar top & bottom, Zen-style (2026-11-26, Sammy: "the sidebar has to be PERFECT, especially the address bar") ====
++   Top row: the sidebar button alone on the left, back / forward / reload on the right. Extensions and the menu move down
++   to the bottom bar next to Settings, Downloads and History. Address bar: a soft pill, no border; the shield and the
++   page buttons appear on hover (the copy-link button always stays). */
++:root[folio-sidebar-toolbar] #nav-bar-customization-target { padding-right: 0 !important; column-gap: 2px; }
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button { order: -10 !important; margin-inline-end: auto !important; }
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button) { order: 1 !important; }
++:root[folio-sidebar-toolbar] #nav-bar #reload-button, :root[folio-sidebar-toolbar] #nav-bar #stop-reload-button { order: 2 !important; }
++/* Back / forward only when they can do something (Sammy, like Zen's "Back Forward" mod): a disabled one is gone, and
++   it fades in when it becomes usable. */
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button) {
++  transition: opacity 160ms ease, display 160ms allow-discrete;
++}
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button)[disabled] { display: none !important; opacity: 0; }
++@starting-style {
++  :root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button):not([disabled]) { opacity: 0; }
++}
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button, #reload-button, #stop-button, #sidebar-button) > .toolbarbutton-icon,
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button, #reload-button, #stop-button, #sidebar-button) {
++  --toolbarbutton-inner-padding: 7px;
++}
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button, #reload-button, #stop-button, #sidebar-button) > .toolbarbutton-icon {
++  background: transparent !important; border-radius: 8px !important; opacity: 0.78; transition: background-color .15s ease, opacity .15s ease;
++}
++:root[folio-sidebar-toolbar] #nav-bar :is(#back-button, #forward-button, #reload-button, #stop-button, #sidebar-button):not([disabled]):hover > .toolbarbutton-icon {
++  background: rgb(var(--folio-ink, 255 255 255) / 0.1) !important; opacity: 1;
++}
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button[checked] > .toolbarbutton-icon { background: transparent !important; }
++/* Pinned extension buttons live in the extensions menu (bottom bar) so the top row stays calm. */
++:root[folio-sidebar-toolbar] #nav-bar-customization-target > :is(.webextension-browser-action, toolbaritem.unified-extensions-item) { display: none !important; }
++
++/* Extensions + menu: fixed into the bottom bar's right end (they stay Firefox's own buttons, so their panels work). */
++:root[folio-sidebar-toolbar] #nav-bar :is(#unified-extensions-button, #PanelUI-button) {
++  position: fixed !important; top: auto !important; right: auto !important; bottom: 10px; z-index: 4;
++}
++:root[folio-sidebar-toolbar] #nav-bar #PanelUI-button { left: calc(var(--folio-sidebar-left, 0px) + var(--folio-sidebar-width, 260px) - 42px); }
++:root[folio-sidebar-toolbar] #nav-bar #unified-extensions-button { left: calc(var(--folio-sidebar-left, 0px) + var(--folio-sidebar-width, 260px) - 80px); }
++:root[folio-sidebar-toolbar] #nav-bar :is(#unified-extensions-button, #PanelUI-button) > .toolbarbutton-icon,
++:root[folio-sidebar-toolbar] #nav-bar #PanelUI-menu-button > .toolbarbutton-badge-stack {
++  border-radius: 8px !important; opacity: 0.78; padding: 7px !important; width: 30px !important; height: 30px !important;
++}
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom { justify-content: flex-start !important; gap: 2px !important; padding-inline-end: 84px !important; }
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom toolbarbutton { border-radius: 8px !important; opacity: 0.78; transition: background-color .15s ease, opacity .15s ease; }
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom toolbarbutton:hover { background: rgb(var(--folio-ink, 255 255 255) / 0.1) !important; opacity: 1; }
++
++/* The address bar: a soft pill. */
++:root[folio-sidebar-toolbar] #urlbar:not([focused], [open]) > #urlbar-background {
++  border: none !important; outline: none !important; box-shadow: none !important; border-radius: 12px !important;
++  background: rgb(var(--folio-ink, 255 255 255) / 0.07) !important; transition: background-color .15s ease;
++}
++:root[folio-sidebar-toolbar] #urlbar:not([focused], [open]):hover > #urlbar-background { background: rgb(var(--folio-ink, 255 255 255) / 0.11) !important; }
++:root[folio-sidebar-toolbar] #urlbar[focused] > #urlbar-background {
++  border-radius: 12px !important; border: none !important;
++  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--folio-accent) 75%, transparent), 0 8px 24px rgba(0,0,0,.25) !important;
++}
++:root[folio-sidebar-toolbar] #urlbar { --urlbar-min-height: 36px; }
++:root[folio-sidebar-toolbar] #urlbar:not([focused]) :is(#identity-box, #tracking-protection-icon-container),
++:root[folio-sidebar-toolbar] #urlbar:not([focused]) #page-action-buttons > :not(#folio-zen-button) {
++  opacity: 0; transition: opacity .15s ease;
++}
++:root[folio-sidebar-toolbar] #urlbar:not([focused]):hover :is(#identity-box, #tracking-protection-icon-container),
++:root[folio-sidebar-toolbar] #urlbar:not([focused]):hover #page-action-buttons > :not(#folio-zen-button) { opacity: 1; }
++/* an insecure page still shows its warning at all times */
++:root[folio-sidebar-toolbar] #urlbar #identity-box:is(.notSecure, .notSecureText, .mixedActiveContent, .certErrorPage) { opacity: 1 !important; }
++:root[folio-sidebar-toolbar] #nav-bar #urlbar-container { margin: 0 !important; }
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button > .toolbarbutton-icon,
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button:is([checked], [open], :active) > .toolbarbutton-icon { background-color: transparent !important; }
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button:hover > .toolbarbutton-icon { background-color: rgb(var(--folio-ink, 255 255 255) / 0.1) !important; }
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom > * { flex: none !important; margin: 0 !important; }
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom toolbarbutton { padding: 7px !important; }
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button > .toolbarbutton-badge-stack { background-color: transparent !important; border-radius: 8px !important; opacity: .78; }
++:root[folio-sidebar-toolbar] #nav-bar #sidebar-button:hover > .toolbarbutton-badge-stack { background-color: rgb(var(--folio-ink, 255 255 255) / 0.1) !important; opacity: 1; }
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom > spacer { display: none !important; }
++/* Find bar follows the accent too. */
++:root:not([lwtheme]) .browserContainer > findbar .findbar-textbox:focus { outline: 1.5px solid var(--folio-accent) !important; outline-offset: 0 !important; border-color: transparent !important; }
++:root:not([lwtheme]) .browserContainer > findbar .findbar-textbox:not(:focus) { outline: none; }
++:root:not([lwtheme]) .browserContainer > findbar :is(.findbar-highlight, .findbar-case-sensitive, .findbar-match-diacritics, .findbar-entire-word)[checked] { accent-color: var(--folio-accent); }
++
++/* Domain-only address (folio-zen.js domainOnly): the field's own text hides behind the site name until you click in. */
++#folio-url-domain { display: none; }
++#urlbar[folio-domain] #folio-url-domain {
++  display: flex; align-items: center; position: absolute; inset-inline: 0 0; top: 0; bottom: 0; margin: 0 !important; padding-inline-start: 1px;
++  pointer-events: none; font-size: 1em; color: var(--toolbar-field-color, currentColor); opacity: .9; white-space: nowrap; overflow: hidden;
++}
++#urlbar[folio-domain] .urlbar-input-box { position: relative; }
++#urlbar[folio-domain] #urlbar-input, #urlbar[folio-domain] .urlbar-input { opacity: 0 !important; }
++
++/* Bottom bar, Zen-sparse (2026-11-26, Sammy: "the bottom is very crowded"): Settings on the left, the menu on the right.
++   Downloads, History and Add-ons are all in that menu (and the downloads button still appears on its own while a
++   download runs). */
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom :is(#folio-side-downloads, #folio-side-history) { display: none !important; }
++:root[folio-sidebar-toolbar] #nav-bar #unified-extensions-button { display: none !important; }
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom { padding-inline-end: 0 !important; }
++
++/* Icons-only, decluttered (2026-11-26, Sammy: "still VERY crowded"): only the space you're in (Shift + scroll switches),
++   no add-space button, and only Settings at the bottom (Downloads / History are in the menu). */
++:root[folio-sidebar-icons] #folio-spaces .folio-space:not(.active),
++:root[folio-sidebar-icons] #folio-spaces :is(.folio-space-add, [class*="add"]) { display: none !important; }
++:root[folio-sidebar-icons] #folio-spaces { padding: 6px 0 !important; margin-block: 6px !important; }
++:root[folio-sidebar-icons] #folio-sidebar-bottom :is(#folio-side-downloads, #folio-side-history) { display: none !important; }
++:root[folio-sidebar-icons] #folio-sidebar-bottom { border-top: none !important; }
++
++/* Split view in the sidebar, Zen-style (2026-11-26, Sammy's 5:24 reference): the split's tabs share one pill-shaped row,
++   one segment each (icon + start of the title), thin dividers between them; the active segment is lit. */
++.folio-split-row {
++  display: flex; align-items: stretch; gap: 0; margin: 2px 0; padding: 3px; border-radius: 12px;
++  background: rgb(var(--folio-ink, 255 255 255) / 0.07);
++}
++.folio-split-row > .folio-side-tab {
++  flex: 1 1 0 !important; min-width: 0 !important; margin: 0 !important; border-radius: 9px !important;
++  box-shadow: none !important; padding-inline: 8px 6px !important; gap: 6px !important;
++}
++.folio-split-row > .folio-side-tab + .folio-side-tab { position: relative; }
++.folio-split-row > .folio-side-tab + .folio-side-tab::before {
++  content: ""; position: absolute; inset-inline-start: 0; top: 25%; bottom: 25%;
++  border-inline-start: 1px solid rgb(var(--folio-ink, 255 255 255) / 0.16);
++}
++.folio-split-row > .folio-side-tab:is([selected], :hover) + .folio-side-tab::before,
++.folio-split-row > .folio-side-tab:is([selected], :hover)::before { border-color: transparent; }
++.folio-split-row > .folio-side-tab:not(:hover) > .folio-side-tab-close { display: none !important; }
++.folio-split-row > .folio-side-tab .folio-side-tab-title { min-width: 0; }
++:root[folio-sidebar-icons] .folio-split-row { flex-direction: column; padding: 2px; width: 34px; margin-inline: auto; }
++.folio-split-row { min-width: 0; overflow: hidden; }
++.folio-split-row > .folio-side-tab { overflow: hidden !important; flex-basis: 0 !important; width: 0; }
++.folio-split-row > .folio-side-tab > .folio-side-tab-close { display: none !important; }
++.folio-split-row > .folio-side-tab > :is(.folio-side-tab-icon, .folio-side-tab-spinner) { flex: none; }
++.folio-split-row > .folio-side-tab .folio-side-tab-title { flex: 1 1 0; width: 0; overflow: hidden; }
++/* Hidden page buttons take no room (the site name gets the full width) and slide open on hover. */
++:root[folio-sidebar-toolbar] #urlbar #page-action-buttons > :not(#folio-zen-button) {
++  max-width: 0; overflow: hidden; margin: 0 !important; padding-inline: 0 !important;
++  transition: max-width .18s ease, opacity .15s ease;
++}
++:root[folio-sidebar-toolbar] #urlbar:is(:hover, [focused]) #page-action-buttons > :not(#folio-copy-button, [hidden]) { max-width: 40px; opacity: 1 !important; }
++
++/* ==== Bottom bar = Zen's (2026-11-26, Sammy: "move the workspaces below ... JUST LIKE ZEN") ====
++   Left: Settings (its menu has Downloads, History and Firefox's own menu). Right: the space icons and "+". */
++#folio-sidebar-bottom { display: flex !important; align-items: center !important; justify-content: space-between !important;
++  padding: 6px 4px 2px !important; gap: 4px !important; border: none !important; }
++#folio-sidebar-bottom :is(#folio-side-downloads, #folio-side-history) { display: none !important; }
++#folio-sidebar-bottom > #folio-spaces {
++  display: flex !important; flex-direction: row !important; align-items: center; gap: 2px !important;
++  margin: 0 !important; padding: 0 !important; border: none !important; flex: none !important;
++}
++#folio-sidebar-bottom > #folio-spaces .folio-spaces-balance { display: none !important; }
++#folio-sidebar-bottom > #folio-spaces .folio-spaces-list { display: flex; flex-direction: row !important; gap: 2px; }
++#folio-sidebar-bottom > #folio-spaces .folio-space {
++  width: 28px !important; height: 28px !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important;
++  border-radius: 8px !important; border: none !important; background: transparent !important; box-shadow: none !important;
++  opacity: .55; transition: opacity .15s ease, background-color .15s ease;
++}
++#folio-sidebar-bottom > #folio-spaces .folio-space:hover { opacity: .9; background: rgb(var(--folio-ink, 255 255 255) / 0.08) !important; }
++#folio-sidebar-bottom > #folio-spaces .folio-space.active { opacity: 1; background: rgb(var(--folio-ink, 255 255 255) / 0.12) !important; }
++#folio-sidebar-bottom > #folio-spaces .folio-space-add { width: 28px; height: 28px; margin: 0 !important; opacity: .55; border-radius: 8px; }
++#folio-sidebar-bottom > #folio-spaces .folio-space-add:hover { opacity: 1; background: rgb(var(--folio-ink, 255 255 255) / 0.08); }
++/* Firefox's menu button: invisible, parked on the Settings button so "More..." opens its menu right there. */
++:root[folio-sidebar-toolbar] #nav-bar #PanelUI-button {
++  left: calc(var(--folio-sidebar-left, 0px) + 10px) !important; bottom: 10px !important;
++  opacity: 0 !important; pointer-events: none !important;
++}
++/* icons-only: the bottom stacks (settings, then the current space) */
++:root[folio-sidebar-icons] #folio-sidebar-bottom { flex-direction: column !important; justify-content: flex-end !important; }
++:root[folio-sidebar-icons] #folio-sidebar-bottom > #folio-spaces .folio-spaces-list { flex-direction: column !important; }
++#folio-sidebar-bottom > #folio-spaces { margin-inline-start: auto !important; }
++/* Spaces centered in the bottom bar, like Zen (2026-11-26): a ghost as wide as Settings on the right keeps them truly centered. */
++:root:not([folio-sidebar-icons]) #folio-sidebar-bottom > #folio-spaces { margin-inline: auto !important; }
++:root:not([folio-sidebar-icons]) #folio-sidebar-bottom::after { content: ""; width: 30px; flex: none; }
++
++/* ==== 2026-11-26 round 4 (Sammy) ==== */
++/* Top row order is fixed whatever the saved toolbar layout says: sidebar button | back, forward, reload. */
++:root[folio-sidebar-toolbar] #nav-bar #back-button { order: 1 !important; }
++:root[folio-sidebar-toolbar] #nav-bar #forward-button { order: 2 !important; }
++:root[folio-sidebar-toolbar] #nav-bar :is(#stop-reload-button, #reload-button) { order: 3 !important; }
++/* The site name sits in the middle of the pill, like Safari / Zen. */
++#urlbar[folio-domain] #folio-url-domain { justify-content: center; text-align: center; padding-inline: 0 !important; }
++/* Address bar: one icon each side, idle or hovered. Left: the security shield. Right: Zen. Everything else is gone
++   from the bar (keys: copy link Ctrl+Shift+C, bookmark Ctrl+D, reader view Ctrl+Alt+R, Zen Ctrl+Alt+Z; site
++   permissions are in the shield's panel). Permission prompts still show their icon while they're open. */
++:root[folio-sidebar-toolbar] #urlbar #page-action-buttons > :not(#folio-zen-button) { display: none !important; }
++:root[folio-sidebar-toolbar] #urlbar #page-action-buttons > #folio-zen-button {
++  display: flex !important; max-width: none !important; opacity: 1 !important; margin: 0 !important;
++}
++:root[folio-sidebar-toolbar] #urlbar :is(#identity-permission-box, #blocked-permissions-container, #remote-control-box) { display: none !important; }
++:root[folio-sidebar-toolbar] #urlbar #identity-icon-box:not(.notSecure, .notSecureText, .mixedActiveContent) { display: none !important; }
++:root[folio-sidebar-toolbar] #urlbar #tracking-protection-icon-container { opacity: 1 !important; }
++:root[folio-sidebar-toolbar] #urlbar #identity-box { opacity: 1 !important; }
++/* Bottom bar: Settings left, spaces centered, the menu (Zen's second icon) right. */
++:root[folio-sidebar-toolbar] #nav-bar #PanelUI-button {
++  left: calc(var(--folio-sidebar-left, 0px) + var(--folio-sidebar-width, 260px) - 44px) !important; bottom: 10px !important;
++  opacity: 1 !important; pointer-events: auto !important;
++}
++:root[folio-sidebar-toolbar] #folio-sidebar-bottom::after { width: 34px !important; }
++
++/* Find bar open/close (2026-11-26, Sammy: "the closing animation is glitchy"): Firefox closes it by sliding a negative
++   margin and collapsing it 150 ms later, which fought the floating card. Now one smooth fade + lift both ways. */
++:root:not([lwtheme]) .browserContainer > findbar {
++  animation: none !important; margin-bottom: 0 !important;
++  transition: opacity .16s ease, transform .18s cubic-bezier(.2,0,0,1), visibility 0s linear 0s !important;
++  opacity: 1; transform: none;
++}
++:root:not([lwtheme]) .browserContainer > findbar[hidden] {
++  display: flex !important; visibility: hidden !important; opacity: 0; transform: translateY(-8px) scale(.97);
++  pointer-events: none; margin-bottom: 0 !important;
++  transition: opacity .14s ease, transform .16s ease, visibility 0s linear .16s !important;
++}
++:root:not([lwtheme]) .browserContainer > findbar[hidden] > :is(.findbar-container, .findbar-closebutton) { opacity: 1 !important; }
++@starting-style { :root:not([lwtheme]) .browserContainer > findbar:not([hidden]) { opacity: 0; transform: translateY(-8px) scale(.97); } }
++.folio-menu-item { display: flex !important; align-items: center; gap: 10px; }
++.folio-menu-icon { width: 16px; height: 16px; flex: none; background-color: currentColor; opacity: .8;
++  mask: var(--icon) center / 16px no-repeat; }
++
++/* Tab close button only on hover (2026-11-26). No animation on any x (Sammy: "remove the x animations"): it just appears. */
++.folio-side-tab > .folio-side-tab-close { opacity: 0; pointer-events: none; transition: none !important; }
++.folio-side-tab:hover > .folio-side-tab-close, .folio-side-tab > .folio-side-tab-close:focus-visible {
++  opacity: .75; pointer-events: auto;
++}
++.folio-side-tab > .folio-side-tab-close:hover { opacity: 1; }
++
++/* Top bar (sidebar off / horizontal / compact layout), 2026-11-26: the wallpaper continues under it as the same glass as
++   the sidebar, and the bar is slimmer. */
++:root[folio-wallpaper]:not([folio-sidebar-toolbar]) #navigator-toolbox {
++  background-image: var(--folio-wallpaper) !important; background-size: cover !important;
++  background-position: center !important; background-attachment: fixed !important; border: none !important;
++}
++:root[folio-wallpaper]:not([folio-sidebar-toolbar]) #navigator-toolbox > * {
++  background: var(--folio-sidebar-scrim, color-mix(in srgb, var(--folio-sidebar-bg) 14%, transparent)) !important;
++  -moz-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
++}
++:root:not([folio-sidebar-toolbar]) #nav-bar { padding-block: 2px !important; min-height: 0 !important; }
++:root:not([folio-sidebar-toolbar]) #nav-bar :is(toolbarbutton, #urlbar-container) { margin-block: 0 !important; }
++:root:not([folio-sidebar-toolbar]) #urlbar { --urlbar-min-height: 30px; }
++:root:not([folio-sidebar-toolbar]) #nav-bar toolbarbutton { --toolbarbutton-inner-padding: 6px; }
++
++/* Key popup (folio-zen.js keyViz) */
++#folio-keyviz {
++  position: fixed; z-index: 2147483000; left: 50%; bottom: 28px; transform: translateX(-50%);
++  display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 14px; pointer-events: none;
++  background: color-mix(in srgb, var(--folio-sidebar-bg, #15121f) 88%, transparent); color: var(--folio-text, #fff);
++  -moz-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
++  box-shadow: 0 12px 36px rgba(0,0,0,.4), 0 0 0 1px rgb(var(--folio-ink, 255 255 255) / .1);
++  font: 600 14px system-ui, sans-serif; transition: opacity .25s ease, transform .25s ease;
++}
++#folio-keyviz[leaving] { opacity: 0; transform: translateX(-50%) translateY(6px); }
++#folio-keyviz kbd { font: inherit; padding: 4px 9px; border-radius: 8px; background: rgb(var(--folio-ink, 255 255 255) / .1);
++  box-shadow: inset 0 -2px 0 rgb(0 0 0 / .25); }
++#folio-keyviz span { margin-inline-start: 6px; font-weight: 500; opacity: .8; }
++
++/* Dialogs over a tab float in the middle (2026-11-26). */
++.dialogOverlay { justify-content: center !important; }
++.dialogOverlay > .dialogBox { border-radius: 14px !important; box-shadow: 0 24px 70px rgba(0,0,0,.5) !important; }
++
++/* Top bar (2026-11-26, Sammy: "why is the right arrow on the left and not near the left arrow?"): back and forward always sit
++   together at the start, right after the sidebar button, whatever order a saved toolbar layout has. Each still shows
++   only when it can be used ([disabled] ones stay hidden). */
++:root:not([folio-sidebar-toolbar]) #nav-bar-customization-target > #sidebar-button { order: -10; }
++:root:not([folio-sidebar-toolbar]) #nav-bar-customization-target > #back-button { order: -9; }
++:root:not([folio-sidebar-toolbar]) #nav-bar-customization-target > #forward-button { order: -8; }
++/* ...and reload / stop sits right after them (Sammy: "x on the right, arrows on the left, messy"): the navigation
++   group is one cluster on the left, the address bar in the middle, extensions and other buttons on the right. */
++:root:not([folio-sidebar-toolbar]) #nav-bar-customization-target > #stop-reload-button { order: -7; margin-inline-end: 6px; }
++:root:not([folio-sidebar-toolbar]) #nav-bar-customization-target > #urlbar-container { order: 0; }
++:root:not([folio-sidebar-toolbar]) #nav-bar-customization-target > :not(#sidebar-button, #back-button, #forward-button, #stop-reload-button, #urlbar-container, #vertical-spacer) { order: 5; }
++
++/* See-through + wallpaper (2026-11-26, Sammy: "see-through only works on the left sidebar, not on the right or the top bar").
++   The top bar painted the wallpaper over itself (a later, more specific rule than the see-through one), so it stayed solid.
++   In see-through mode every part of the frame is clear: left sidebar, right sidebar and top bar alike. */
++:root[folio-seethrough][folio-wallpaper]:not([folio-sidebar-toolbar]) #navigator-toolbox,
++:root[folio-seethrough][folio-wallpaper]:not([folio-sidebar-toolbar]) #navigator-toolbox > *,
++:root[folio-seethrough][folio-wallpaper] #folio-sidebar {
++  background: transparent !important; background-image: none !important;
++  -moz-backdrop-filter: none !important; backdrop-filter: none !important;
++}
++/* The floating sidebar (peek) with a wallpaper: it shows the part of the wallpaper behind it (the right part when the
++   sidebar is on the right), under the same tint as the docked one, instead of a flat dark color. Still fully opaque, so
++   the page under it never shows through. */
++:root[folio-wallpaper]:not([folio-seethrough])[folio-sidebar-hidden][folio-peek] #folio-sidebar#folio-sidebar {
++  background: var(--folio-sidebar-scrim, linear-gradient(color-mix(in srgb, var(--folio-sidebar-bg) 40%, transparent), color-mix(in srgb, var(--folio-sidebar-bg) 40%, transparent))),
++    linear-gradient(color-mix(in srgb, var(--folio-sidebar-bg) 30%, transparent), color-mix(in srgb, var(--folio-sidebar-bg) 30%, transparent)),
++    var(--folio-wallpaper) var(--folio-peek-bgpos, center) / var(--folio-peek-bgsize, cover) no-repeat scroll,
++    #141418 !important;
++}
++
++/* Sidebar on the right: its glass uses the tint measured on the wallpaper's RIGHT strip. */
++@media -moz-pref("folio.sidebar.right") {
++  :root[folio-wallpaper] #folio-sidebar { --folio-sidebar-scrim: var(--folio-sidebar-scrim-r); }
++}
++
++/* See-through pages (2026-11-26, Sammy: "the new tab won't become see-through, I want the Transparent Zen look"): Firefox
++   paints a solid color (#2b2a33) behind every page in .browserContainer, so even a clear page showed a dark slab. In
++   see-through mode it's clear; the page card's tint (#tabbrowser-tabbox, "page opacity") is what you see behind the page. */
++:root[folio-seethrough] :is(.browserContainer, .browserStack, .browserSidebarContainer) { background: transparent !important; }
++
++/* "No tabs open" (2026-11-26, Sammy: "the logo is so small; give these pages the new tab's wallpaper treatment"): the same
++   look as the new tab page: the wallpaper behind (lined up with the window's), the F as big as the new tab's (150 px) in
++   wallpaper glass with the accent, the text under it. See-through: no wallpaper, the window shows through instead. */
++:root[folio-empty] #folio-empty { gap: 12px; }
++:root[folio-wallpaper]:not([folio-seethrough]) #folio-empty {
++  background: var(--folio-wallpaper) center / cover fixed, var(--folio-empty-bg, #17171b) !important;
++}
++#folio-empty .folio-empty-mark {
++  width: 150px; height: 150px; margin-bottom: 16px; opacity: 1;
++  mask: url("chrome://branding/content/folio-mark.svg") center / contain no-repeat;
++  background: linear-gradient(135deg, color-mix(in srgb, var(--folio-accent) 50%, white) 0%, color-mix(in srgb, var(--folio-accent) 75%, transparent) 55%, color-mix(in srgb, var(--folio-accent) 90%, black) 100%);
++}
++:root[folio-wallpaper]:not([folio-seethrough]) #folio-empty .folio-empty-mark {
++  background: linear-gradient(135deg, color-mix(in srgb, var(--folio-accent) 50%, white) 0%, color-mix(in srgb, var(--folio-accent) 24%, transparent) 55%, color-mix(in srgb, var(--folio-accent) 34%, transparent) 100%),
++    var(--folio-wallpaper) center / cover fixed;
++  filter: saturate(1.8) brightness(1.5);
++}
++#folio-empty .folio-empty-title { font-size: 26px; font-weight: 300; letter-spacing: .01em; }
++:root:is([folio-wallpaper], [folio-seethrough]) #folio-empty { color: #fff; }
++:root:is([folio-wallpaper], [folio-seethrough]) #folio-empty .folio-empty-title { text-shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 4px 24px rgba(0, 0, 0, .25); }
++#folio-empty .folio-dl-btn { margin-top: 6px; padding: 8px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid rgba(255, 255, 255, .2);
++  background: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05)); color: inherit;
++  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 10px 34px rgba(0, 0, 0, .28); }
++#folio-empty .folio-dl-btn:hover { background: color-mix(in srgb, var(--folio-accent) 35%, rgba(255, 255, 255, .08)); }
++
++/* Error pages (folio-zen.js watchErrorPages): the wallpaper behind them, lined up with the window's, under a light dark
++   veil so their small text reads. In see-through mode nothing is painted (the window shows through). */
++:root[folio-wallpaper]:not([folio-seethrough]) .browserContainer[folio-errorpage] {
++  background: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)), var(--folio-wallpaper) center / cover fixed !important;
++}
++
++/* See-through colors (2026-11-26): the glass is tinted with the DESKTOP wallpaper's colors (FolioTheme.applyDesktop sets
++   --folio-sidebar-bg / --folio-accent from it), dark or a white frost in light mode, instead of a fixed near-black. */
++:root[folio-seethrough] { --folio-st-base: var(--folio-sidebar-bg, #0b0b10); }
++:root[folio-seethrough][folio-light] { --folio-st-base: var(--folio-sidebar-bg, #f4f3f8); }
++
++/* ≡ in the floating sidebar's bottom row (folio-sidebar.js #folio-side-menu): only in the peek, where the real menu
++   button stays up in the top bar. Same size and look as the other bottom buttons. */
++#folio-side-menu { display: none !important; }
++:root[folio-sidebar-hidden][folio-peek] #folio-sidebar #folio-side-menu { display: flex !important; order: 99; margin-inline-start: 4px; }
++#folio-side-menu > .toolbarbutton-icon {
++  list-style-image: none !important; width: 16px; height: 16px; padding: 0 !important;
++  background-color: currentColor; mask: url("chrome://browser/skin/menu.svg") center / 16px no-repeat;
++}
++#folio-side-menu > .toolbarbutton-text { display: none; }
++
++/* Sammy (2026-11-26): the Zen button takes the bookmark star's place in the address bar. Bookmarking stays on Ctrl+D
++   and in the menu. (The Zen button shows on websites; Folio's own pages have nothing to Zen.) */
++#star-button-box { display: none !important; }
++
++/* Sammy (2026-11-26): no copy-link button in the address bar; only the Zen lotus (in the star's place). */
++#folio-copy-button { display: none !important; }

@@ -1,0 +1,13 @@
+--- a/browser/components/urlbar/UrlbarUtils.sys.mjs
++++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
+@@ -1601,6 +1601,10 @@
+     type: "object",
+     required: ["url"],
+     properties: {
++      // Folio: a bang completion row; picking it fills the input with this text.
++      folioFill: {
++        type: "string",
++      },
+       blockL10n: L10N_SCHEMA,
+       bookmarkDateMs: {
+         type: "number",

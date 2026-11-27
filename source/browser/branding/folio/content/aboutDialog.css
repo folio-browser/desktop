@@ -1,0 +1,46 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Folio's About window (Help > About Folio). Folio's dark palette instead of Nightly's purple.
+   Firefox's lines say "Folio is designed by Mozilla…" and ask for donations to Mozilla, and the bottom links are
+   Firefox's own terms and privacy notice: none of that is true of Folio, so they are hidden and Folio's own line
+   takes their place. The licenses link (about:license) stays: Folio ships under Mozilla's licenses. */
+@media not ((prefers-contrast) and (prefers-color-scheme: light)) {
+  #aboutDialogContainer {
+    background-color: #17171b;
+    color: #ececf1;
+    color-scheme: dark;
+  }
+
+  #bottomBox {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+}
+
+#rightBox {
+  background-size: auto 44px;
+  margin-inline: 30px;
+  padding-top: 64px;
+}
+
+#bottomBox {
+  padding: 15px 10px;
+}
+
+#communityDesc,
+#communityExperimentalDesc,
+#contributeDesc,
+#contributeDescReferrals,
+#bottomBox .bottom-link:not([href="about:license"]) {
+  display: none !important;
+}
+
+#detailsBox::after {
+  content: "The web, collected. Built on Firefox, with Folio's own interface and privacy defaults.";
+  display: block;
+  margin-top: 1em;
+  max-width: 34em;
+  line-height: 1.45;
+  opacity: 0.75;
+}

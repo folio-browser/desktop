@@ -1,0 +1,24 @@
+--- a/browser/actors/ClickHandlerChild.sys.mjs
++++ b/browser/actors/ClickHandlerChild.sys.mjs
+@@ -181,6 +181,21 @@
+       // nested link elements.
+       event.preventMultipleActions();
+ 
++      // Folio Glance (2026-11-25): Alt+click on a link previews it in a floating card instead of navigating.
++      if (
++        event.button == 0 &&
++        event.altKey &&
++        !event.ctrlKey &&
++        !event.metaKey &&
++        !event.shiftKey &&
++        Services.prefs.getBoolPref("folio.glance.enabled", true)
++      ) {
++        event.preventDefault();
++        json.folioGlance = true;
++        json.screenX = event.screenX; // the card grows out of the click point
++        json.screenY = event.screenY;
++      }
++
+       this.sendAsyncMessage("Content:Click", json);
+     }
+ 

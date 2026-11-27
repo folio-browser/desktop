@@ -1,0 +1,13 @@
+--- a/toolkit/components/content-classifier/ContentClassifierService.h
++++ b/toolkit/components/content-classifier/ContentClassifierService.h
+@@ -322,6 +322,10 @@
+   void ProcessListChanges(const nsTArray<nsCString>& aUpdated,
+                           const nsTArray<nsCString>& aRemoved);
+ 
++  // Folio: load the built-in ad blocker's local filter lists (test_block
++  // engine, ...protection.test_list_urls) if protection is on. Main thread.
++  void MaybeLoadFolioLists();
++
+   // This rebuilds the given features,
+   // according to that preference snapshot. This also means that features that
+   // aren't referenced by the current pref snapshot are going to have their

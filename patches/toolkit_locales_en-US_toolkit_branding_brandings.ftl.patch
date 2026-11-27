@@ -1,0 +1,16 @@
+--- a/toolkit/locales/en-US/toolkit/branding/brandings.ftl
++++ b/toolkit/locales/en-US/toolkit/branding/brandings.ftl
+@@ -43,11 +43,11 @@
+ 
+ # “Suggest” can be localized, “Firefox” must be treated as a brand
+ # and kept in English.
+--firefox-suggest-brand-name = Firefox Suggest
++-firefox-suggest-brand-name = Suggestions
+ 
+ # ”Home" can be localized, “Firefox” must be treated as a brand
+ # and kept in English.
+--firefox-home-brand-name = Firefox Home
++-firefox-home-brand-name = Folio Home
+ 
+ # View" can be localized, “Firefox” must be treated as a brand
+ # and kept in English.

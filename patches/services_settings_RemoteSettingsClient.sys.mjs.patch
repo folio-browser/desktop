@@ -1,0 +1,14 @@
+--- a/services/settings/RemoteSettingsClient.sys.mjs
++++ b/services/settings/RemoteSettingsClient.sys.mjs
+@@ -1074,6 +1074,11 @@
+    *   The collection metadata, that contains the signature payload.
+    */
+   async validateCollectionSignature(records, timestamp, metadata) {
++    // Folio: with "Security updates" off, only the data shipped inside the app is used (as trusted as the binary),
++    // so there is nothing to verify and no certificate chain to download from Mozilla's CDN.
++    if (!Services.prefs.getBoolPref("folio.safety.updates", true)) {
++      return;
++    }
+     if (
+       !metadata?.signatures ||
+       !Array.isArray(metadata.signatures) ||

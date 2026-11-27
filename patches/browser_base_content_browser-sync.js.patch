@@ -1,0 +1,15 @@
+--- a/browser/base/content/browser-sync.js
++++ b/browser/base/content/browser-sync.js
+@@ -1318,7 +1318,12 @@
+   },
+ 
+   shouldHideSendContextMenuItems(enabled) {
++    // Folio: "Send to device" only for people signed in to Sync. Signed out it was a Mozilla account upsell.
++    if (UIState.get().status != UIState.STATUS_SIGNED_IN) {
++      return true;
++    }
+     return !enabled || !this.FXA_ENABLED;
++
+   },
+ 
+   getSendTabTargets() {

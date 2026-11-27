@@ -1,0 +1,15 @@
+--- a/browser/extensions/newtab/content-src/components/Search/_Search.scss
++++ b/browser/extensions/newtab/content-src/components/Search/_Search.scss
+@@ -182,9 +182,9 @@
+   }
+ 
+   .logo {
+-    width: 52px;
+-    height: 52px;
+-    background-size: 52px;
++    width: 104px;
++    height: 104px;
++    background-size: contain;
+   }
+ 
+   .wordmark {

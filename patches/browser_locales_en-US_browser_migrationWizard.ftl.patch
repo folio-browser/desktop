@@ -1,0 +1,10 @@
+--- a/browser/locales/en-US/browser/migrationWizard.ftl
++++ b/browser/locales/en-US/browser/migrationWizard.ftl
+@@ -44,6 +44,7 @@
+ migration-wizard-migrator-display-name-opera-gx = Opera GX
+ migration-wizard-migrator-display-name-safari = Safari
+ migration-wizard-migrator-display-name-vivaldi = Vivaldi
++migration-wizard-migrator-display-name-helium = Helium
+ 
+ migration-source-name-ie = Internet Explorer
+ migration-source-name-edge = Microsoft Edge

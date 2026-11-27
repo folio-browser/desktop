@@ -1,0 +1,56 @@
+--- a/toolkit/components/content-classifier/content_classifier_engine/ContentClassifierEngine.h
++++ b/toolkit/components/content-classifier/content_classifier_engine/ContentClassifierEngine.h
+@@ -78,6 +78,7 @@
+   bool IsNonRecommendedAddon() const { return mIsNonRecommendedAddon; }
+   bool IsPassiveContent() const { return mPassiveContent; }
+   bool AddonMayLoad() const { return mAddonMayLoad; }
++  const nsCString& RequestType() const { return mRequestType; }
+ 
+   explicit ContentClassifierRequest(nsIChannel* aChannel);
+ 
+@@ -111,6 +112,45 @@
+ 
+   const ContentClassifierFeature& Feature() const { return mFeature; }
+ 
++  // Folio: cosmetic filtering (newline-joined lists). Callers hold the
++  // service lock, which serializes every engine call.
++  nsresult CosmeticResources(const nsACString& aUrl, nsACString& aHide,
++                             nsACString& aExceptions, nsACString& aScript,
++                             bool* aGenerichide) const {
++    if (!mEngine) {
++      return NS_ERROR_NOT_AVAILABLE;
++    }
++    nsCString hide, exceptions, script;
++    nsresult rv = content_classifier_engine_cosmetic_resources(
++        mEngine, &aUrl, &hide, &exceptions, &script, aGenerichide);
++    NS_ENSURE_SUCCESS(rv, rv);
++    aHide.Assign(hide);
++    aExceptions.Assign(exceptions);
++    aScript.Assign(script);
++    return NS_OK;
++  }
++  // Folio: scriptlet resources (Brave adblock-resources JSON) from a file.
++  // Only while the engine is being built (not yet shared).
++  nsresult UseResourcesFile(const nsACString& aPath) {
++    if (!mEngine) {
++      return NS_ERROR_NOT_AVAILABLE;
++    }
++    return content_classifier_engine_use_resources_file(mEngine, &aPath);
++  }
++  nsresult ClassIdSelectors(const nsACString& aClasses, const nsACString& aIds,
++                            const nsACString& aExceptions,
++                            nsACString& aSelectors) const {
++    if (!mEngine) {
++      return NS_ERROR_NOT_AVAILABLE;
++    }
++    nsCString out;
++    nsresult rv = content_classifier_engine_hidden_class_id_selectors(
++        mEngine, &aClasses, &aIds, &aExceptions, &out);
++    NS_ENSURE_SUCCESS(rv, rv);
++    aSelectors.Assign(out);
++    return NS_OK;
++  }
++
+   ContentClassifierEngineResult CheckNetworkRequest(
+       const ContentClassifierRequest& aRequest, bool aPreviouslyMatched,
+       bool aMatchDocumentAsNetworkRequest);

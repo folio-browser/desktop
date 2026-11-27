@@ -1,0 +1,119 @@
+--- a/toolkit/components/content-classifier/ContentClassifierService.cpp
++++ b/toolkit/components/content-classifier/ContentClassifierService.cpp
+@@ -155,7 +155,7 @@
+      nsIWebProgressListener::STATE_ALLOWED_TRACKING_CONTENT,
+      NS_ERROR_TRACKING_URI, false, false,
+      Some(nsIScopedPrefs::PRIVACY_TRACKINGPROTECTION_CONTENT_TEST_ENABLED),
+-     &ContentClassifierFeatureUtils::ShouldClassifyForETP, nullptr},
++     &ContentClassifierFeatureUtils::IsFolioBlockable, nullptr},
+     {"test_annotate"_ns, Span<const nsLiteralCString>(kTestAnnotateListIds),
+      nsIClassifiedChannel::ClassificationFlags::CLASSIFIED_TRACKING,
+      nsIWebProgressListener::STATE_LOADED_LEVEL_1_TRACKING_CONTENT,
+@@ -424,6 +424,8 @@
+     if (HasAnyActiveRemoteSettingsFeatures()) {
+       service->InitRSClient();
+     }
++    // Folio: and (re)load the ad blocker's local lists (Settings switch turned back on).
++    service->MaybeLoadFolioLists();
+     return;
+   }
+ 
+@@ -620,9 +622,28 @@
+     InitRSClient();
+   }
+ 
++  // Folio: the built-in ad blocker (FolioBlocker.sys.mjs) keeps its filter lists as local files named in
++  // ...protection.test_list_urls. Upstream only loads those when that pref CHANGES; load them at startup too.
++  MaybeLoadFolioLists();
++
+   ContentClassifierPrefMirror::Init();
+ }
+ 
++void ContentClassifierService::MaybeLoadFolioLists() {
++  if (!sEnabled) {
++    return;
++  }
++  nsAutoCString urls;
++  Preferences::GetCString(
++      "privacy.trackingprotection.content.protection.test_list_urls", urls);
++  if (urls.IsEmpty()) {
++    return;
++  }
++  nsTArray<nsCString> updated;
++  updated.AppendElement("test_block"_ns);
++  ProcessListChanges(updated, {});
++}
++
+ void ContentClassifierService::InitRSClient() {
+   MOZ_ASSERT(NS_IsMainThread());
+ 
+@@ -1354,6 +1375,23 @@
+                 "\"{}\": {:#x}",
+                 aFeature.mName, static_cast<uint32_t>(rv));
+     aEngineOutput = nullptr;
++    return rv;
++  }
++  // Folio: a list line "! folio-resources-file: <path>" (a comment to the
++  // filter parser) names the scriptlet resources JSON written by
++  // FolioBlocker.sys.mjs. Read here, on the build thread, with the engine not
++  // yet shared.
++  constexpr auto kResourcesMarker = "! folio-resources-file: "_ns;
++  for (const nsCString& rule : aRules) {
++    if (StringBeginsWith(rule, kResourcesMarker)) {
++      nsAutoCString path(Substring(rule, kResourcesMarker.Length()));
++      path.Trim(" \t\r\n");
++      nsresult rrv = aEngineOutput->UseResourcesFile(path);
++      MOZ_LOG_FMT(gContentClassifierLog, LogLevel::Info,
++                  "BuildEngineFromRules - Folio resources {}: {:#x}",
++                  path.get(), static_cast<uint32_t>(rrv));
++      break;
++    }
+   }
+   return rv;
+ }
+@@ -1895,3 +1933,45 @@
+ }
+ 
+ }  // namespace mozilla
++
++namespace mozilla {
++
++// ---- Folio: cosmetic filtering for the built-in ad blocker (2026-11-24) ----
++// Sync on the main thread, under mLock like every engine call (the engine's
++// regex cache is not thread-safe; the lock serializes it with classification).
++
++NS_IMETHODIMP ContentClassifierService::FolioCosmetic(const nsACString& aUrl,
++                                                      nsACString& aHide,
++                                                      nsACString& aExceptions,
++                                                      nsACString& aScript,
++                                                      bool* aGenerichide) {
++  NS_ENSURE_ARG_POINTER(aGenerichide);
++  *aGenerichide = false;
++  if (!IsInitialized()) {
++    return NS_ERROR_NOT_INITIALIZED;
++  }
++  MutexAutoLock lock(mLock);
++  auto entry = mEngines.Lookup("test_block"_ns);
++  if (!entry || !entry.Data()) {
++    return NS_ERROR_NOT_AVAILABLE;
++  }
++  return entry.Data()->CosmeticResources(aUrl, aHide, aExceptions, aScript,
++                                         aGenerichide);
++}
++
++NS_IMETHODIMP ContentClassifierService::FolioClassIdSelectors(
++    const nsACString& aClasses, const nsACString& aIds,
++    const nsACString& aExceptions, nsACString& aSelectors) {
++  if (!IsInitialized()) {
++    return NS_ERROR_NOT_INITIALIZED;
++  }
++  MutexAutoLock lock(mLock);
++  auto entry = mEngines.Lookup("test_block"_ns);
++  if (!entry || !entry.Data()) {
++    return NS_ERROR_NOT_AVAILABLE;
++  }
++  return entry.Data()->ClassIdSelectors(aClasses, aIds, aExceptions,
++                                        aSelectors);
++}
++
++}  // namespace mozilla

@@ -1,0 +1,11 @@
+--- a/browser/components/moz.build
++++ b/browser/components/moz.build
+@@ -25,6 +25,8 @@
+     "about",
+     "aboutlogins",
+     "aboutwelcome",
++    "folio-settings",
++    "folio-welcome",
+     "aiwindow",
+     "asrouter",
+     "attribution",

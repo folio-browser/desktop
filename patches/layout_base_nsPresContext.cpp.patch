@@ -1,0 +1,30 @@
+--- a/layout/base/nsPresContext.cpp
++++ b/layout/base/nsPresContext.cpp
+@@ -3161,6 +3161,27 @@
+   return Document()->CookieJarSettings();
+ }
+ 
++uint64_t nsPresContext::GetFontFarbleSeed() const {
++  if (mFontFarbleSeed) {
++    return *mFontFarbleSeed;
++  }
++  dom::Document* doc = Document();
++  if (!doc) {
++    return 0;
++  }
++  if (!doc->ShouldResistFingerprinting(RFPTarget::FontFarbling)) {
++    mFontFarbleSeed = mozilla::Some(uint64_t(0));
++    return 0;
++  }
++  nsAutoCString site;
++  nsIPrincipal* principal = doc->NodePrincipal();
++  if (!principal || NS_FAILED(principal->GetBaseDomain(site)) || site.IsEmpty()) {
++    site.AssignLiteral("(opaque)");
++  }
++  mFontFarbleSeed = mozilla::Some(FontVisibilityProvider::FarbleSeedForSite(site));
++  return *mFontFarbleSeed;
++}
++
+ Maybe<FontVisibility> nsPresContext::MaybeInheritFontVisibility() const {
+   return Nothing();
+ }

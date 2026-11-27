@@ -1,0 +1,20 @@
+--- a/browser/base/content/utilityOverlay.js
++++ b/browser/base/content/utilityOverlay.js
+@@ -549,7 +549,17 @@
+ }
+ 
+ function buildHelpMenu() {
++  // Folio: no "Share ideas" (Mozilla Connect) or "Switching to a new device" (Mozilla promo) in the Help menu.
++  // Report Broken Site and Report Deceptive Site send to Mozilla / Google Safe Browsing, which Folio has off.
++  for (let id of ["feedbackPage", "helpSwitchDevice", "menu_referralsPage", "help_reportBrokenSite",
++                  "menu_HelpPopup_reportPhishingtoolmenu", "menu_HelpPopup_reportPhishingErrortoolmenu"]) {
++    let item = document.getElementById(id);
++    if (item) {
++      item.hidden = true;
++    }
++  }
+   document.getElementById("feedbackPage").disabled =
++
+     !Services.policies.isAllowed("feedbackCommands");
+ 
+   document.getElementById("helpSafeMode").disabled =

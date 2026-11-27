@@ -1,0 +1,27 @@
+--- a/toolkit/xre/nsAppRunner.cpp
++++ b/toolkit/xre/nsAppRunner.cpp
+@@ -11,6 +11,7 @@
+ #include "mozilla/Attributes.h"
+ #include "mozilla/BaseProfiler.h"
+ #include "mozilla/Components.h"
++#include "mozilla/RandomNum.h"
+ #include "mozilla/FilePreferences.h"
+ #include "mozilla/FOG.h"
+ #include "mozilla/ChaosMode.h"
+@@ -4667,6 +4668,16 @@
+ 
+   StartupTimeline::Record(StartupTimeline::MAIN);
+ 
++  // Folio: one random secret for the whole browser session, handed to every child process through the
++  // environment, so that font farbling shows the same fonts to a site no matter which process renders it.
++  if (!PR_GetEnv("FOLIO_FARBLE_SECRET")) {
++    mozilla::Maybe<uint64_t> secret = mozilla::RandomUint64();
++    static char sFarbleEnv[64];
++    SprintfLiteral(sFarbleEnv, "FOLIO_FARBLE_SECRET=%016llx",
++                   (unsigned long long)secret.valueOr(uint64_t(PR_Now())));
++    PR_SetEnv(sFarbleEnv);
++  }
++
+   // On Windows, to get working console arrangements so help/version/etc
+   // print something, we need to initialize the native app support.
+   nsresult rv = NS_CreateNativeAppSupport(getter_AddRefs(mNativeApp));

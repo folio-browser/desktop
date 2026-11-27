@@ -1,0 +1,30 @@
+--- a/browser/base/content/global-scripts.js
++++ b/browser/base/content/global-scripts.js
+@@ -20,6 +20,27 @@
+   Services.scriptloader.loadSubScript("chrome://global/content/editMenuOverlay.js", this);
+   Services.scriptloader.loadSubScript("chrome://browser/content/utilityOverlay.js", this);
+   Services.scriptloader.loadSubScript("chrome://browser/content/browser-sets.js", this);
++  // Folio: drag toolbar buttons anytime.
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-drag.js", this);
++  // Folio: our own sidebar (icons, tabs, Ctrl+S toggle).
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-sidebar.js", this);
++  // (folio-sidebar.js was split into these on 2026-11-26; same order as their old place in the file.)
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-theme.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-zoom.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-arc.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-site.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-peek.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-window.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-seethrough.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-privacy.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-tabs.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-actions.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-containers.js", this);
++  Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-keys.js", this);
++  try { Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-glance.js", this); } catch (e) { console.error("Folio: folio-glance.js", e); }
++  try { Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-routing.js", this); } catch (e) { console.error("Folio: folio-routing.js", e); }
++  try { Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-zen.js", this); } catch (e) { console.error("Folio: folio-zen.js", e); }
++  try { Services.scriptloader.loadSubScript("chrome://browser/content/folio-settings/folio-share.js", this); } catch (e) { console.error("Folio: folio-share.js", e); }
+   if (AppConstants.platform == "macosx") {
+     Services.scriptloader.loadSubScript("chrome://global/content/macWindowMenu.js", this);
+   }

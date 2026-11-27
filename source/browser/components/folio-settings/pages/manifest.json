@@ -1,0 +1,67 @@
+{
+  "manifest_version": 3,
+  "name": "Folio Pages",
+  "version": "1.2.2",
+  "description": "Recolors websites from your Folio wallpaper (site styles where available, Dark Reader engine elsewhere).",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "site-pages@folio.browser"
+    }
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8791/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "scripts": [
+      "lib/mcu.js",
+      "lib/folio-palette.js",
+      "lib/less.min.js",
+      "lib/proxy.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "exclude_matches": [
+        "http://127.0.0.1:8791/*"
+      ],
+      "js": [
+        "lib/darkreader.js",
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "experiment_apis": {
+    "folioTheme": {
+      "schema": "api/schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "script": "api/parent.js",
+        "paths": [
+          [
+            "folioTheme"
+          ]
+        ]
+      }
+    }
+  }
+}

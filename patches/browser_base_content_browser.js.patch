@@ -1,0 +1,14 @@
+--- a/browser/base/content/browser.js
++++ b/browser/base/content/browser.js
+@@ -695,7 +695,10 @@
+ var gBrowserAllowScriptsToCloseInitialTabs = false;
+ 
+ if (AppConstants.platform != "macosx") {
+-  var gEditUIVisible = true;
++  // Folio: start false. With true, the address bar's initial select() ran the full edit-command
++  // update, including a Wayland clipboard query (~60 ms at startup). updateEditUIVisibility() in
++  // _delayedStartup sets the real value and updates the commands if edit buttons are shown.
++  var gEditUIVisible = false;
+ }
+ 
+ Object.defineProperty(this, "gReduceMotion", {

@@ -1,0 +1,22 @@
+--- a/toolkit/components/telemetry/TelemetryStartup.sys.mjs
++++ b/toolkit/components/telemetry/TelemetryStartup.sys.mjs
+@@ -2,6 +2,8 @@
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
++import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
++
+ const lazy = {};
+ 
+ ChromeUtils.defineESModuleGetters(lazy, {
+@@ -23,7 +25,9 @@
+     // In the content process, this is done in ContentProcessSingleton.js.
+     lazy.TelemetryController.observe(null, aTopic, null);
+   }
+-  if (aTopic == "profile-after-change") {
++  // Folio: no crash reporter is built, so building the whole environment just to annotate
++  // crash reports cost ~50 ms of startup for nothing.
++  if (aTopic == "profile-after-change" && AppConstants.MOZ_CRASHREPORTER) {
+     annotateEnvironment();
+     lazy.TelemetryEnvironment.registerChangeListener(
+       "CrashAnnotator",

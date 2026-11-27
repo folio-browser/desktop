@@ -1,0 +1,16 @@
+--- a/toolkit/components/resistfingerprinting/RFPTargets.inc
++++ b/toolkit/components/resistfingerprinting/RFPTargets.inc
+@@ -114,6 +114,13 @@
+ ITEM_VALUE(WebGLRendererConstant,       80)
+ // How IME software in use chooses to style composition (exposed via EditContext)
+ ITEM_VALUE(IMEStyle,                    81)
++// Folio's own targets sit at 120+ so new upstream targets (numbered upward from 82) never collide with them.
++// Folio: per-site, per-session random subset of non-OS fonts is hidden from pages (Brave-style font farbling)
++ITEM_VALUE(FontFarbling,                120)
++// Folio: per-site, per-session random noise (Brave-style) so trackers cannot link a browser across sites
++ITEM_VALUE(AudioFarbling,               121)
++ITEM_VALUE(PluginFarbling,              122)
++ITEM_VALUE(HWConcurrencyFarbling,       123)
+ 
+ /*
+  * In certain cases, we precompute the value of ShouldRFP for e.g. a Document.

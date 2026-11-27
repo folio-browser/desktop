@@ -1,0 +1,19 @@
+--- a/toolkit/themes/shared/in-content/info-pages.css
++++ b/toolkit/themes/shared/in-content/info-pages.css
+@@ -190,3 +190,16 @@
+ .content-flex {
+   flex: 1 1 65%;
+ }
++
++/* Folio (2026-11-26, Sammy: "the logo is so small"): the Folio illustration on error / info pages is as big as the new
++   tab's F (150 px), with the text on its right. The page paints no background of its own: Folio's window puts the
++   wallpaper (or the see-through window) behind error pages, and the normal page color everywhere else. */
++:root { --info-pages-title-space-image-offset: 186px; }
++html, body { background-color: transparent !important; }
++.title {
++  background-size: 150px !important;
++  min-height: 150px;
++  background-position: left center !important;
++  display: flex; align-items: center;
++}
++.title-text { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 24px rgba(0, 0, 0, 0.2); }

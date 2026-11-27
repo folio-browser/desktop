@@ -1,0 +1,21 @@
+--- a/dom/base/nsPluginArray.h
++++ b/dom/base/nsPluginArray.h
+@@ -37,7 +37,7 @@
+   nsMimeTypeArray* MimeTypeArray() { return mMimeTypeArray; }
+ 
+   // PluginArray WebIDL methods
+-  uint32_t Length() { return ForceNoPlugins() ? 0 : std::size(mPlugins); }
++  uint32_t Length() { return ForceNoPlugins() ? 0 : mVisibleCount; }
+ 
+   nsPluginElement* Item(uint32_t aIndex) {
+     bool unused;
+@@ -65,6 +65,9 @@
+   RefPtr<nsMimeTypeArray> mMimeTypeArray;
+   nsCOMPtr<nsPIDOMWindowInner> mWindow;
+   mozilla::Array<RefPtr<nsPluginElement>, 5> mPlugins;
++  // Folio: which of the 5 standard PDF entries this site is shown (Brave-style plugin farbling; entry 0 always).
++  uint32_t mVisible[5] = {0, 1, 2, 3, 4};
++  uint32_t mVisibleCount = 5;
+ };
+ 
+ /**

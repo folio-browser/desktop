@@ -1,0 +1,11 @@
+--- a/browser/components/sidebar/sidebar-main.css
++++ b/browser/components/sidebar/sidebar-main.css
+@@ -219,3 +219,8 @@
+ .bottom-actions {
+   align-self: end;
+ }
++
++/* Folio: hide the tool icons (bookmarks, history, ...) from the Appearance page. */
++@media -moz-pref("folio.hide.sidebartools") {
++  .buttons-wrapper, #sidebar-tools-and-extensions-splitter { display: none !important; }
++}

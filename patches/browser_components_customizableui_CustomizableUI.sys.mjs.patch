@@ -1,0 +1,23 @@
+--- a/browser/components/customizableui/CustomizableUI.sys.mjs
++++ b/browser/components/customizableui/CustomizableUI.sys.mjs
+@@ -8280,6 +8280,20 @@
+   }
+ 
+   /**
++   * Folio: turn overflow handling off while the toolbar sits in the sidebar (its buttons wrap
++   * onto rows there instead of spilling into the overflow menu), and back on at the top.
++   *
++   * @param {boolean} aEnabled
++   */
++  folioSetOverflowEnabled(aEnabled) {
++    if (aEnabled) {
++      this.#enable();
++    } else {
++      this.#disable();
++    }
++  }
++
++  /**
+    * Makes the OverflowableToolbar inert and moves all overflowable items back
+    * into the customization target of the toolbar.
+    */

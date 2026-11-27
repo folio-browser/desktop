@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Tab</title>
+<link rel="icon" type="image/svg+xml" href="chrome://branding/content/folio-mark.svg">
+<meta http-equiv="Content-Security-Policy" content="default-src chrome:; script-src chrome:; style-src chrome:; img-src chrome: data: blob: https:; object-src 'none'">
+<link rel="stylesheet" href="chrome://browser/content/folio-settings/folio-newtab.css">
+</head>
+<body>
+<main class="newtab">
+  <div class="mark" role="img" aria-label="Folio"><div class="mark-wall"></div></div>
+  <div class="clock" aria-live="off"><div id="time" class="time"></div><div id="date" class="date"></div></div>
+</main>
+<div id="menu" class="menu" hidden>
+  <button id="menu-wallpaper" class="menu-item" type="button">Change wallpaper…</button>
+</div>
+<input id="wallpaper-file" type="file" accept="image/*" hidden>
+<script src="chrome://browser/content/folio-settings/folio-newtab.js"></script>
+</body>
+</html>

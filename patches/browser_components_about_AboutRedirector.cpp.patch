@@ -1,0 +1,13 @@
+--- a/browser/components/about/AboutRedirector.cpp
++++ b/browser/components/about/AboutRedirector.cpp
+@@ -100,6 +100,10 @@
+          nsIAboutModule::HIDE_FROM_ABOUTABOUT},
+     {"policies", "chrome://browser/content/policies/aboutPolicies.html",
+      nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},
++    {"folio-newtab", "chrome://browser/content/folio-settings/folio-newtab.html",
++     nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},  // Folio new tab
++    {"folio", "chrome://browser/content/folio-settings/about-folio.html",
++     nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},  // Folio
+     {"preferences", "chrome://browser/content/preferences/preferences.xhtml",
+      nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},
+     {"privatebrowsing", "chrome://browser/content/aboutPrivateBrowsing.html",

@@ -1,0 +1,24 @@
+--- a/browser/base/content/nsContextMenu.sys.mjs
++++ b/browser/base/content/nsContextMenu.sys.mjs
+@@ -521,8 +521,10 @@
+     var shouldShow =
+       this.onSaveableLink || isMailtoInternal || this.onPlainTextLink;
+     var isWindowPrivate = lazy.PrivateBrowsingUtils.isWindowPrivate(window);
++    // Folio: containers are an internal detail of "Separate logins" spaces; their menus stay hidden with the UI pref.
+     let showContainers =
+       Services.prefs.getBoolPref("privacy.userContext.enabled") &&
++      Services.prefs.getBoolPref("privacy.userContext.ui.enabled", false) &&
+       lazy.ContextualIdentityService.getPublicIdentities().length;
+     let showSplitViews = Services.prefs.getBoolPref(
+       "browser.tabs.splitView.enabled"
+@@ -776,7 +778,9 @@
+     );
+ 
+     // Send media URL (but not for canvas, since it's a big data: URL)
+-    this.showItem("context-sendimage", this.onImage || showBGImage);
++    // Folio: "Email Image…" removed (it only opened a mail client with the image's link).
++    this.showItem("context-sendimage", false);
++
+ 
+     // View Image Info defaults to false, user can enable
+     var showViewImageInfo =

@@ -1,0 +1,11 @@
+--- a/build/pgo/index.html
++++ b/build/pgo/index.html
+@@ -214,7 +214,7 @@
+     ),
+     new Item(
+       "http://localhost:8000/index.html?startAutomatically=true",
+-      extendedTimeout,
++      6 * 60 * 1000, // Folio: full 10 iterations on the slow instrumented build (2 min cut it short)
+       "benchmark"
+     ),
+     new Item(

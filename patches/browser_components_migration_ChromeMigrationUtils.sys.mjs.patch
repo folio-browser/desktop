@@ -1,0 +1,11 @@
+--- a/browser/components/migration/ChromeMigrationUtils.sys.mjs
++++ b/browser/components/migration/ChromeMigrationUtils.sys.mjs
+@@ -330,6 +330,8 @@
+         Edge: [["Home", ".config", "microsoft-edge"]],
+         Opera: [["Home", ".config", "opera"]],
+         Vivaldi: [["Home", ".config", "vivaldi"]],
++        // Folio: Helium (imput's Chromium-based browser). Verified on Linux only.
++        Helium: [["Home", ".config", "net.imput.helium"]],
+       },
+     };
+     let options = SUB_DIRECTORIES[AppConstants.platform][chromeProjectName];

@@ -1,0 +1,13 @@
+--- a/toolkit/components/content-classifier/ContentClassifierFeatureUtils.h
++++ b/toolkit/components/content-classifier/ContentClassifierFeatureUtils.h
+@@ -32,6 +32,10 @@
+   // media) in every mode.
+   static bool ShouldClassifyNonPassiveForETP(
+       const ContentClassifierRequest& aRequest, ClassifyMode aMode);
++  // Folio's built-in blocker (test_block): uBlock-style lists also block a site's own ad/tracker requests, never
++  // the page document itself (pref privacy.trackingprotection.content.folio.first_party, default on).
++  static bool IsFolioBlockable(const ContentClassifierRequest& aRequest,
++                               ClassifyMode aMode);
+   static bool IsNonRecommendedAddonRequest(
+       const ContentClassifierRequest& aRequest, ClassifyMode aMode);
+   static void HarmfulAddonCancelChannelCallback(nsIChannel* aChannel);

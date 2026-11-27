@@ -1,0 +1,70 @@
+--- a/gfx/thebes/gfxPlatformFontList.cpp
++++ b/gfx/thebes/gfxPlatformFontList.cpp
+@@ -1086,7 +1086,9 @@
+   FontVisibility level = aFontVisibilityProvider
+                              ? aFontVisibilityProvider->GetFontVisibility()
+                              : FontVisibility::User;
+-  if (!IsVisibleToCSS(*family, level)) {
++  if (!IsVisibleToCSS(*family, level) ||
++      IsFarbledOutFamily(aFontVisibilityProvider, family->Visibility(),
++                         family->Key().AsString(list))) {
+     if (aFontVisibilityProvider) {
+       aFontVisibilityProvider->ReportBlockedFontFamily(*family);
+     }
+@@ -1177,6 +1179,30 @@
+   }
+ }
+ 
++/* static */
++bool gfxPlatformFontList::IsFarbledOutFamily(FontVisibilityProvider* aProvider,
++                                             FontVisibility aFamilyVisibility,
++                                             const nsACString& aFamilyKey) {
++  if (!aProvider || aFamilyVisibility == FontVisibility::Base ||
++      aFamilyVisibility == FontVisibility::Hidden) {
++    return false;
++  }
++  uint64_t seed = aProvider->GetFontFarbleSeed();
++  if (!seed) {
++    return false;
++  }
++  // Common OS font families stay visible (they are the same on millions of machines, and sites rely on them).
++  static const char* const kKeep[] = {"dejavu", "liberation", "noto", "cantarell", "adwaita", "symbola"};
++  for (const char* prefix : kKeep) {
++    if (StringBeginsWith(aFamilyKey, nsDependentCString(prefix))) {
++      return false;
++    }
++  }
++  uint64_t h = seed ^ (uint64_t(HashString(aFamilyKey)) * 0x9E3779B97F4A7C15ULL);
++  h ^= h >> 33; h *= 0xff51afd7ed558ccdULL; h ^= h >> 33;
++  return (h & 1) != 0;  // about half of the other fonts, different for every site and every session
++}
++
+ bool gfxPlatformFontList::IsVisibleToCSS(const gfxFontFamily& aFamily,
+                                          FontVisibility aVisibility) const {
+   return aFamily.Visibility() <= aVisibility || IsFontFamilyWhitelistActive();
+@@ -1789,6 +1815,11 @@
+     // according to current font-visibility prefs.
+     if (family) {
+       bool visible = IsVisibleToCSS(*family, visibilityLevel);
++      if (visible && aGeneric == StyleGenericFontFamily::None &&
++          IsFarbledOutFamily(aFontVisibilityProvider, family->Visibility(),
++                             family->Key().AsString(SharedFontList()))) {
++        visible = false;
++      }
+       if (visible || (allowHidden && family->IsHidden())) {
+         aOutput->AppendElement(FamilyAndGeneric(family, aGeneric));
+         return true;
+@@ -1805,6 +1836,13 @@
+ 
+   auto isBlockedByVisibilityLevel = [=, this](gfxFontFamily* aFamily) -> bool {
+     bool visible = IsVisibleToCSS(*aFamily, visibilityLevel);
++    if (visible && aGeneric == StyleGenericFontFamily::None) {
++      nsAutoCString famKey;
++      GenerateFontListKey(aFamily->Name(), famKey);
++      if (IsFarbledOutFamily(aFontVisibilityProvider, aFamily->Visibility(), famKey)) {
++        visible = false;
++      }
++    }
+     if (visible || (allowHidden && aFamily->IsHidden())) {
+       return false;
+     }

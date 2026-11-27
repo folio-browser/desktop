@@ -1,0 +1,23 @@
+--- a/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs
++++ b/toolkit/mozapps/extensions/internal/XPIProvider.sys.mjs
+@@ -2791,6 +2791,20 @@
+         );
+       }
+ 
++      // Folio: built-in site skins (retheme web apps from the Folio wallpaper). Bump the version with the manifest.
++      if (AppConstants.platform != "android") {
++        this.maybeInstallBuiltinAddon(
++          "site-skins@folio.browser",
++          "1.0.3",
++          "resource://folio-skins/"
++        );
++        this.maybeInstallBuiltinAddon(
++          "site-pages@folio.browser",
++          "1.2.2",
++          "resource://folio-pages/"
++        );
++      }
++
+       resolveProviderReady(Promise.all(this.startupPromises));
+ 
+       if (AppConstants.MOZ_CRASHREPORTER) {

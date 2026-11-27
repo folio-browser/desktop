@@ -1,0 +1,129 @@
+/* Folio's new tab page. Dark like the rest of Folio; the wallpaper (if set) is its background. */
+:root { --bg: #141417; --text: #f2f0f6; --muted: rgba(242, 240, 246, 0.55); --field: #26252c; --border: rgba(255, 255, 255, 0.08); --accent: #9d8cff; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg) center / cover no-repeat fixed; color: var(--text); font-family: system-ui, -apple-system, "Noto Sans", sans-serif; }
+html { overflow: hidden; }
+/* The wallpaper is drawn at the size of the whole browser window and shifted back by this page's offset in it,
+   so it lines up with the wallpaper behind the sidebar and continues across the seam. */
+body.has-wallpaper::before {
+  content: ""; position: fixed; z-index: -1; pointer-events: none;
+  left: calc(var(--win-x, 0px) * -1); top: calc(var(--win-y, 0px) * -1);
+  width: var(--win-w, 100vw); height: var(--win-h, 100vh);
+  background: var(--wallpaper) center / cover no-repeat;
+}
+.newtab { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 40px 24px; }
+.mark { position: relative; width: 150px; height: 150px;
+  -webkit-mask: url("chrome://branding/content/folio-mark.svg") center / contain no-repeat; mask: url("chrome://branding/content/folio-mark.svg") center / contain no-repeat; }
+/* The F is glass: the current wallpaper, aligned with the page background, blurred and brightened inside the F's shape, plus an accent tint. */
+.mark-wall { position: fixed; left: calc(var(--win-x, 0px) * -1); top: calc(var(--win-y, 0px) * -1); width: var(--win-w, 100vw); height: var(--win-h, 100vh);
+  background: var(--wallpaper) center / cover no-repeat; filter: blur(12px) saturate(1.8) brightness(1.6); }
+.mark::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 50%, white) 0%, color-mix(in srgb, var(--accent) 24%, transparent) 55%, color-mix(in srgb, var(--accent) 34%, transparent) 100%); }
+.search { width: min(640px, 92vw); position: relative; }
+.search input {
+  width: 100%; min-height: 52px; padding: 0 20px 0 52px; border-radius: 26px; color: var(--text); font: inherit; font-size: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+  -moz-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 10px 34px rgba(0, 0, 0, 0.28);
+}
+.search input::placeholder { color: rgba(255, 255, 255, 0.62); }
+.search input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+.search-icon { position: absolute; left: 20px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); border: 2px solid var(--muted); border-radius: 50%; }
+.search-icon::after { content: ""; position: absolute; width: 2px; height: 7px; background: var(--muted); right: -4px; bottom: -6px; transform: rotate(-45deg); }
+/* Suggestions dropdown */
+.suggest { position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; right: 0; padding: 6px; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05)), color-mix(in srgb, var(--field) 55%, transparent);
+  -moz-backdrop-filter: blur(24px) saturate(1.6); backdrop-filter: blur(24px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 14px 40px rgba(0, 0, 0, 0.4); animation: menu-in 0.14s ease-out; }
+.suggest[hidden] { display: none; }
+.sg-row { display: flex; align-items: baseline; gap: 10px; padding: 10px 16px; border-radius: 16px; font-size: 15.5px; cursor: default; white-space: nowrap; overflow: hidden; }
+.sg-row.sel, .sg-row:hover { background: rgba(255, 255, 255, 0.13); }
+.sg-main { overflow: hidden; text-overflow: ellipsis; }
+.sg-bang { font-weight: 650; color: var(--accent); }
+.sg-sub { margin-inline-start: auto; color: var(--muted); font-size: 13px; }
+.sg-go .sg-main { font-weight: 600; }
+/* Right-click menu */
+.menu { position: fixed; z-index: 10; min-width: 200px; padding: 6px; border-radius: 14px; border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--field) 92%, transparent); -moz-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45); transform-origin: top left; animation: menu-in 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+.menu[hidden] { display: none; }
+.menu-item { display: block; width: 100%; padding: 10px 12px; border: 0; border-radius: 9px; background: none; color: var(--text);
+  font: inherit; font-size: 14px; text-align: left; cursor: default; }
+.menu-item:hover, .menu-item:focus-visible { background: rgba(255, 255, 255, 0.1); outline: none; }
+@keyframes menu-in { from { opacity: 0; transform: scale(0.94) translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* See-through window: no page color of its own; the window behind shows through. */
+body.seethrough { background: transparent; }
+
+/* Private window: a quiet badge under the logo. */
+.private-badge {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: -12px;
+  padding: 6px 14px 6px 8px; border-radius: 999px;
+  background: rgba(128, 0, 215, 0.18); border: 1px solid rgba(181, 120, 255, 0.35);
+  color: #e6d6ff; font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+}
+.private-badge::before {
+  content: ""; width: 20px; height: 20px; flex: none;
+  background: url("chrome://global/skin/icons/indicator-private-browsing.svg") center / contain no-repeat;
+}
+
+/* Light (2026-11-24): follows Settings > Appearance like the rest of Folio. A wallpaper still wins. */
+@media (prefers-color-scheme: light) {
+  /* Only without a wallpaper: on a wallpaper (the page's or the window's) dark text was unreadable (2026-11-25). */
+  :root:not(:has(body.has-wallpaper, body.win-wallpaper)) { --bg: #f4f3f8; --text: #1c1a23; --muted: rgba(28, 26, 35, 0.55); --field: #ffffff; --border: rgba(0, 0, 0, 0.09); color-scheme: light; }
+}
+@media (prefers-color-scheme: light) {
+  body:not(.has-wallpaper, .win-wallpaper) .mark::after {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, black) 0%, color-mix(in srgb, var(--accent) 70%, black) 55%, color-mix(in srgb, var(--accent) 80%, black) 100%);
+  }
+  body:not(.has-wallpaper, .win-wallpaper) .search input {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 30px rgba(40, 30, 80, 0.1);
+  }
+  body:not(.has-wallpaper, .win-wallpaper) .search input::placeholder { color: rgba(28, 26, 35, 0.5); }
+  body:not(.has-wallpaper, .win-wallpaper) .suggest {
+    border: 1px solid rgba(0, 0, 0, 0.08); background: #ffffff;
+    box-shadow: 0 14px 40px rgba(40, 30, 80, 0.16);
+  }
+}
+@media (prefers-color-scheme: light) { body:not(.has-wallpaper, .win-wallpaper) .sg-row.sel, body:not(.has-wallpaper, .win-wallpaper) .sg-row:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); } }
+
+/* Clock + date under the logo (2026-11-25): calm, light type in the page's colors; follows the wallpaper. */
+.clock { display: flex; flex-direction: column; align-items: center; gap: 6px; user-select: none; margin-top: -4px; }
+.clock .time {
+  position: relative; text-align: center;
+  font-size: clamp(48px, 7vw, 76px); font-weight: 250; letter-spacing: -0.02em; line-height: 1;
+  font-variant-numeric: tabular-nums; color: var(--text);
+}
+.clock .date { font-size: 17px; font-weight: 450; color: var(--muted); letter-spacing: 0.01em; }
+:is(body.has-wallpaper, body.win-wallpaper) .clock { text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35); }
+.clock .time .period {
+  position: absolute; left: 100%; bottom: 0.38em; margin-inline-start: 0.22em;
+  font-size: 0.26em; font-weight: 500; letter-spacing: 0.04em; color: var(--muted);
+}
+.clock { width: 100%; }
+.clock .date { text-align: center; }
+
+/* Clock on a wallpaper: a soft shadow keeps it readable on bright wallpapers too. */
+:is(body.has-wallpaper, body.win-wallpaper) .clock { text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35); }
+.clock .time .period {
+  position: absolute; left: 100%; bottom: 0.38em; margin-inline-start: 0.22em;
+  font-size: 0.26em; font-weight: 500; letter-spacing: 0.04em; color: var(--muted);
+}
+.clock { width: 100%; }
+.clock .date { text-align: center; }
+
+/* Light mode (2026-11-25, Sammy: "in light mode the new tab is still dark"): without a wallpaper the page goes light
+   with dark text. With a wallpaper the page is the picture, so the text stays white with a soft shadow that keeps the
+   clock readable on bright wallpapers too. */
+@media (prefers-color-scheme: light) {
+  :root:not(:has(body.has-wallpaper, body.win-wallpaper)) {
+    --bg: #f5f4f8; --text: #1c1b22; --muted: rgba(28, 27, 34, 0.55); --field: #e8e6ee; --border: rgba(0, 0, 0, 0.08);
+    color-scheme: light;
+  }
+}
+body.has-wallpaper .clock { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 24px rgba(0, 0, 0, 0.25); }

@@ -1,0 +1,15 @@
+--- a/browser/components/shell/nsGNOMEShellService.cpp
++++ b/browser/components/shell/nsGNOMEShellService.cpp
+@@ -141,6 +141,12 @@
+   if (!commandPath) return false;
+ 
+   bool matches = mAppPath.Equals(commandPath);
++  // Folio: the desktop entry starts Folio through folio-launch (CPU/RAM limits), so that counts as Folio too.
++  if (!matches) {
++    gchar* base = g_path_get_basename(commandPath);
++    matches = g_strcmp0(base, "folio-launch") == 0;
++    g_free(base);
++  }
+   g_free(commandPath);
+   return matches;
+ }

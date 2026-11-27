@@ -1,0 +1,75 @@
+{
+  "policies": {
+    "SearchEngines": {
+      "Add": [
+        {
+          "Name": "Brave Search",
+          "URLTemplate": "https://search.brave.com/search?q={searchTerms}",
+          "SuggestURLTemplate": "https://search.brave.com/api/suggest?q={searchTerms}",
+          "Method": "GET",
+          "Alias": "brave"
+        },
+        {
+          "Name": "DuckDuckGo No AI",
+          "URLTemplate": "https://noai.duckduckgo.com/?q={searchTerms}",
+          "SuggestURLTemplate": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
+          "Method": "GET",
+          "Alias": "ddgnoai"
+        },
+        {
+          "Name": "Mojeek",
+          "URLTemplate": "https://www.mojeek.com/search?q={searchTerms}",
+          "Method": "GET",
+          "Alias": "mojeek"
+        },
+        {
+          "Name": "Kagi",
+          "URLTemplate": "https://kagi.com/search?q={searchTerms}",
+          "SuggestURLTemplate": "https://kagi.com/api/autosuggest?q={searchTerms}",
+          "Method": "GET",
+          "Alias": "kagi"
+        },
+        {
+          "Name": "Startpage",
+          "URLTemplate": "https://www.startpage.com/sp/search?q={searchTerms}",
+          "SuggestURLTemplate": "https://www.startpage.com/osuggestions?q={searchTerms}",
+          "Method": "GET",
+          "Alias": "sp"
+        },
+        {
+          "Name": "Ecosia",
+          "URLTemplate": "https://www.ecosia.org/search?q={searchTerms}",
+          "SuggestURLTemplate": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
+          "Method": "GET",
+          "Alias": "eco"
+        },
+        {
+          "Name": "Qwant",
+          "URLTemplate": "https://www.qwant.com/?q={searchTerms}",
+          "SuggestURLTemplate": "https://api.qwant.com/v3/suggest/?q={searchTerms}&client=opensearch",
+          "Method": "GET",
+          "Alias": "qw"
+        },
+        {
+          "Name": "Google No AI",
+          "URLTemplate": "https://www.google.com/search?q={searchTerms}&udm=14",
+          "SuggestURLTemplate": "https://www.google.com/complete/search?client=firefox&q={searchTerms}",
+          "Method": "GET",
+          "Alias": "gnoai"
+        }
+      ],
+      "Default": "Brave Search"
+    },
+    "DisableFirefoxStudies": true,
+    "NoDefaultBookmarks": true,
+    "DisableRemoteImprovements": true,
+    "UserMessaging": {
+      "FirefoxLabs": false,
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "MoreFromMozilla": false,
+      "UrlbarInterventions": false,
+      "SkipOnboarding": true
+    }
+  }
+}

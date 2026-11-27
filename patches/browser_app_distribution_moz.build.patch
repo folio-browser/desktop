@@ -1,0 +1,16 @@
+--- a/browser/app/distribution/moz.build
++++ b/browser/app/distribution/moz.build
+@@ -8,3 +8,13 @@
+     FINAL_TARGET_FILES.distribution += [
+         "distribution.ini",
+     ]
++
++FINAL_TARGET_FILES.distribution += [
++    "policies.json",
++]
++
++
++# Folio: uBlock Origin comes with the browser (installed on first run; a user who removes it is not given it back).
++FINAL_TARGET_FILES.distribution.extensions += [
++    "extensions/uBlock0@raymondhill.net.xpi",
++]

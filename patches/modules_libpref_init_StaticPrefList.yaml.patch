@@ -1,0 +1,16 @@
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -18456,6 +18456,13 @@
+   value: false
+   mirror: always
+ 
++# Folio: the built-in blocker (test_block engine) also checks a site's own
++# subresource requests, like uBlock does. Never the top-level document.
++- name: privacy.trackingprotection.content.folio.first_party
++  type: RelaxedAtomicBool
++  value: true
++  mirror: always
++
+ # Specify `|` delimited urls to use to fetch lists that will
+ # be used to block requests if the feature is enabled.
+ # Warning: this should not be enabled by the build.

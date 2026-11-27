@@ -1,0 +1,10 @@
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1127,6 +1127,7 @@
+  "etp_engine",
+  "nserror",
+  "nsstring",
++ "serde_json",
+  "thin-vec",
+  "wr_malloc_size_of",
+  "xpcom",

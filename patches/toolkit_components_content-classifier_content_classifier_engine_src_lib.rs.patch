@@ -1,0 +1,112 @@
+--- a/toolkit/components/content-classifier/content_classifier_engine/src/lib.rs
++++ b/toolkit/components/content-classifier/content_classifier_engine/src/lib.rs
+@@ -57,7 +57,18 @@
+         .map(|r| String::from_utf8_lossy(r.as_ref()).to_string())
+         .collect();
+ 
+-    let engine = Engine::from_rules(rules_vec, etp_engine::lists::ParseOptions::default());
++    // Folio: its own lists (uBlock's defaults, marked by the "! folio-resources-file:" line) are trusted like uBlock
++    // trusts its own lists, so their trusted scriptlets (YouTube fixes) apply. Mozilla's tracker lists stay default.
++    let folio = rules_vec.iter().any(|r| r.starts_with("! folio-resources-file: "));
++    let opts = if folio {
++        etp_engine::lists::ParseOptions {
++            permissions: etp_engine::resources::PermissionMask::from_bits(1),
++            ..Default::default()
++        }
++    } else {
++        etp_engine::lists::ParseOptions::default()
++    };
++    let engine = Engine::from_rules(rules_vec, opts);
+ 
+     let boxed_engine = Box::new(ContentClassifierFFIEngine { engine });
+     *out_engine = Box::into_raw(boxed_engine);
+@@ -215,3 +226,89 @@
+         (0, host.len())
+     }
+ }
++
++// ---- Folio (2026-11-24): cosmetic filtering for the built-in ad blocker ----
++// Lists are newline-joined (CSS selectors never contain a newline), so no JSON dependency is needed.
++
++fn folio_join(set: &std::collections::HashSet<String>) -> String {
++    set.iter().map(|s| s.as_str()).collect::<Vec<_>>().join("\n")
++}
++
++/// Site-specific cosmetic resources for `url`: selectors to hide, generic-rule exceptions, scriptlet code, and
++/// whether a $generichide exception applies.
++#[no_mangle]
++pub unsafe extern "C" fn content_classifier_engine_cosmetic_resources(
++    engine: *const ContentClassifierFFIEngine,
++    url: &nsACString,
++    out_hide: *mut nsCString,
++    out_exceptions: *mut nsCString,
++    out_script: *mut nsCString,
++    out_generichide: *mut bool,
++) -> nsresult {
++    if engine.is_null()
++        || out_hide.is_null()
++        || out_exceptions.is_null()
++        || out_script.is_null()
++        || out_generichide.is_null()
++    {
++        return NS_ERROR_INVALID_ARG;
++    }
++    let engine = &(*engine).engine;
++    let url_str = String::from_utf8_lossy(url.as_ref()).to_string();
++    let r = engine.url_cosmetic_resources(&url_str);
++    (*out_hide).assign(&folio_join(&r.hide_selectors));
++    (*out_exceptions).assign(&folio_join(&r.exceptions));
++    (*out_script).assign(&r.injected_script);
++    *out_generichide = r.generichide;
++    NS_OK
++}
++
++/// Generic hide selectors for the classes and ids seen on a page (newline-joined in and out), minus `exceptions`
++/// (as returned by content_classifier_engine_cosmetic_resources).
++#[no_mangle]
++pub unsafe extern "C" fn content_classifier_engine_hidden_class_id_selectors(
++    engine: *const ContentClassifierFFIEngine,
++    classes: &nsACString,
++    ids: &nsACString,
++    exceptions: &nsACString,
++    out_selectors: *mut nsCString,
++) -> nsresult {
++    if engine.is_null() || out_selectors.is_null() {
++        return NS_ERROR_INVALID_ARG;
++    }
++    let engine = &(*engine).engine;
++    let split = |s: &nsACString| -> Vec<String> {
++        String::from_utf8_lossy(s.as_ref())
++            .split('\n')
++            .filter(|x| !x.is_empty())
++            .map(|x| x.to_string())
++            .collect()
++    };
++    let exc: std::collections::HashSet<String> = split(exceptions).into_iter().collect();
++    let sel = engine.hidden_class_id_selectors(split(classes), split(ids), &exc);
++    (*out_selectors).assign(&sel.join("\n"));
++    NS_OK
++}
++
++/// Folio: load scriptlet/redirect resources (Brave's adblock-resources JSON format) from a local file into the
++/// engine, so `url_cosmetic_resources` can return injected scriptlet code (YouTube / anti-adblock fixes).
++#[no_mangle]
++pub unsafe extern "C" fn content_classifier_engine_use_resources_file(
++    engine: *mut ContentClassifierFFIEngine,
++    path: &nsACString,
++) -> nsresult {
++    if engine.is_null() {
++        return NS_ERROR_INVALID_ARG;
++    }
++    let path_str = String::from_utf8_lossy(path.as_ref()).to_string();
++    let text = match std::fs::read_to_string(&path_str) {
++        Ok(t) => t,
++        Err(_) => return NS_ERROR_INVALID_ARG,
++    };
++    let resources: Vec<etp_engine::resources::Resource> = match serde_json::from_str(&text) {
++        Ok(r) => r,
++        Err(_) => return NS_ERROR_INVALID_ARG,
++    };
++    (*engine).engine.use_resources(resources);
++    NS_OK
++}

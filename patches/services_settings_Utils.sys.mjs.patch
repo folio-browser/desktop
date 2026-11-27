@@ -1,0 +1,13 @@
+--- a/services/settings/Utils.sys.mjs
++++ b/services/settings/Utils.sys.mjs
+@@ -125,6 +125,10 @@
+     if (REMOTE_ACTIVITY_DISABLED) {
+       return true;
+     }
++    // Folio: Settings > Privacy and security > "Security updates". Off = no connection to Mozilla at all.
++    if (!Services.prefs.getBoolPref("folio.safety.updates", true)) {
++      return true;
++    }
+     if (
+       (lazy.isRunningTests || Cu.isInAutomation) &&
+       this.SERVER_URL == "data:,#remote-settings-dummy/v1"

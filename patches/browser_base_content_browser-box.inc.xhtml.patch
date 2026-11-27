@@ -1,0 +1,27 @@
+--- a/browser/base/content/browser-box.inc.xhtml
++++ b/browser/base/content/browser-box.inc.xhtml
+@@ -3,6 +3,24 @@
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+ <hbox flex="1" id="browser">
++  <!-- Folio sidebar: our own, the only sidebar. Logic in folio-settings/content/folio-sidebar.js -->
++  <vbox id="folio-sidebar" class="chromeclass-extrachrome">
++    <vbox id="folio-sidebar-body" flex="1">
++      <!-- Spaces sit under the Essentials and above the tabs (the Essentials grid is prepended to this list). -->
++      <vbox id="folio-sidebar-tabs" flex="1">
++        <hbox id="folio-spaces" class="folio-side-row"/>
++      </vbox>
++      <vbox id="folio-sidebar-view" flex="1" hidden="true"/>
++    </vbox>
++    <hbox id="folio-sidebar-bottom" class="folio-side-row">
++      <toolbarbutton class="folio-side-button" id="folio-side-settings" data-folio-icon="gear" tooltiptext="Settings"/>
++      <spacer flex="1"/>
++      <toolbarbutton class="folio-side-button" id="folio-side-downloads" data-view="downloads" data-folio-icon="download" tooltiptext="Downloads"/>
++      <spacer flex="1"/>
++      <toolbarbutton class="folio-side-button" id="folio-side-history" data-view="history" data-folio-icon="clock" tooltiptext="History"/>
++    </hbox>
++    <box id="folio-sidebar-resizer" tooltiptext="Drag to resize"/>
++  </vbox>
+   <box context="sidebar-context-menu" id="sidebar-container" hidden="true">
+     <html:sidebar-main flex="1">
+       <box id="vertical-tabs" slot="tabstrip" customizable="true" contextmenu="toolbar-context-menu"></box>

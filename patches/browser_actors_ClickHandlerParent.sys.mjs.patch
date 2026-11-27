@@ -1,0 +1,20 @@
+--- a/browser/actors/ClickHandlerParent.sys.mjs
++++ b/browser/actors/ClickHandlerParent.sys.mjs
+@@ -98,6 +98,17 @@
+       /* Skip invalid URIs. */
+     }
+ 
++    // Folio Glance: Alt+click previews the link in a floating card (folio-glance.js).
++    if (data.folioGlance && window.FolioGlance) {
++      window.FolioGlance.open(data.href, {
++        triggeringPrincipal: data.triggeringPrincipal,
++        userContextId: Number(browser.getAttribute("usercontextid")) || 0,
++        screenX: data.screenX,
++        screenY: data.screenY,
++      });
++      return;
++    }
++
+     // This part is based on handleLinkClick.
+     var where = lazy.BrowserUtils.whereToOpenLink(data);
+     if (where == "current") {

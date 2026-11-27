@@ -1,0 +1,13 @@
+--- a/toolkit/components/resistfingerprinting/RFPTargetsDefault.inc
++++ b/toolkit/components/resistfingerprinting/RFPTargetsDefault.inc
+@@ -13,6 +13,10 @@
+ DESKTOP_DEFAULT(NavigatorHWConcurrencyTiered)
+ DESKTOP_DEFAULT(MaxTouchPointsCollapse)
+ DESKTOP_DEFAULT(IMEStyle)
++DESKTOP_DEFAULT(FontFarbling)
++DESKTOP_DEFAULT(AudioFarbling)
++DESKTOP_DEFAULT(PluginFarbling)
++DESKTOP_DEFAULT(HWConcurrencyFarbling)
+ 
+ #ifdef NIGHTLY_BUILD
+ DESKTOP_DEFAULT(WebGLRendererConstant)

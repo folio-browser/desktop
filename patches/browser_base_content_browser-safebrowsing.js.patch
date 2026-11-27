@@ -1,0 +1,16 @@
+--- a/browser/base/content/browser-safebrowsing.js
++++ b/browser/base/content/browser-safebrowsing.js
+@@ -4,6 +4,13 @@
+ 
+ var gSafeBrowsing = {
+   setReportPhishingMenu() {
++    // Folio: Google Safe Browsing is off (no API key, it only pinged Google), so there is nothing to report to.
++    if (!Services.prefs.getBoolPref("browser.safebrowsing.phishing.enabled", false)) {
++      document.getElementById("menu_HelpPopup_reportPhishingtoolmenu").hidden = true;
++      document.getElementById("menu_HelpPopup_reportPhishingErrortoolmenu").hidden = true;
++      return;
++    }
++
+     // In order to detect whether or not we're at the phishing warning
+     // page, we have to check the documentURI instead of the currentURI.
+     // This is because when the DocShell loads an error page, the

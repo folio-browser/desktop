@@ -1,0 +1,58 @@
+{
+  "manifest_version": 2,
+  "name": "Folio Site Skins",
+  "version": "1.0.3",
+  "description": "Rethemes WhatsApp Web from your Folio wallpaper.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "site-skins@folio.browser"
+    }
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "http://127.0.0.1:8791/*",
+    "https://web.whatsapp.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "lib/mcu.js",
+      "lib/folio-palette.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "theme.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "experiment_apis": {
+    "folioTheme": {
+      "schema": "api/schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "script": "api/parent.js",
+        "paths": [
+          [
+            "folioTheme"
+          ]
+        ]
+      }
+    }
+  }
+}

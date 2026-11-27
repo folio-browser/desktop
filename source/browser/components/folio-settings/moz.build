@@ -1,0 +1,2 @@
+# Folio Appearance page: switches that show or hide each part of the browser UI.
+JAR_MANIFESTS += ["jar.mn"]

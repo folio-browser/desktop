@@ -1,0 +1,28 @@
+--- a/dom/base/Navigator.cpp
++++ b/dom/base/Navigator.cpp
+@@ -30,6 +30,7 @@
+ #include "nsIXULAppInfo.h"
+ #include "nsMimeTypeArray.h"
+ #include "nsPluginArray.h"
++#include "FontVisibilityProvider.h"
+ #include "nsUnicharUtils.h"
+ #ifdef FUZZING
+ #  include "mozilla/StaticPrefs_fuzzing.h"
+@@ -695,11 +696,16 @@
+     return 1;
+   }
+ 
++  uint64_t farble = FontVisibilityProvider::FarbleSeedForDocument(mWindow->GetExtantDoc(), RFPTarget::HWConcurrencyFarbling);
++  if (farble) {
++    farble = FontVisibilityProvider::FarbleMix(farble, 1) | 1;
++  }
+   return rts->ClampedHardwareConcurrency(
+       nsGlobalWindowInner::Cast(mWindow)->ShouldResistFingerprinting(
+           RFPTarget::NavigatorHWConcurrency),
+       nsGlobalWindowInner::Cast(mWindow)->ShouldResistFingerprinting(
+-          RFPTarget::NavigatorHWConcurrencyTiered));
++          RFPTarget::NavigatorHWConcurrencyTiered),
++      farble);
+ }
+ 
+ namespace {
