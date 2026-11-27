@@ -4,8 +4,8 @@ The last browser you'll try. Folio is a desktop browser built on Firefox: tabs i
 peek at links, split view, and a whole browser that takes its colors from your wallpaper. Private by default,
 with no telemetry.
 
-**Website:** https://sammynashed.github.io/Folio
-**Downloads:** [Releases](https://github.com/SammyNashed/Folio/releases) (Windows 10/11 and 64-bit Linux)
+**Website:** https://folio-browser.github.io
+**Downloads:** [Releases](https://github.com/folio-browser/desktop/releases) (Windows 10/11 and 64-bit Linux)
 
 ## What's in this repository
 
